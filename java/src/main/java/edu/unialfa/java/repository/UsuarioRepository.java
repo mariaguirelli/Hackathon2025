@@ -1,7 +1,7 @@
 package edu.unialfa.java.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import edu.unialfa.java.model.Usuario;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 

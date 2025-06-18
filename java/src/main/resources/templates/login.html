@@ -1,0 +1,43 @@
+<!-- resources/templates/login.html -->
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="shared/layout :: head"></head>
+<body>
+
+<div class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px;">
+        <h2 class="text-center mb-4">Login</h2>
+        <form th:action="@{/login}" method="post">
+            <div class="mb-3">
+                <label for="email" class="form-label">E-mail</label>
+                <input type="email" class="form-control" id="email" name="username" placeholder="Digite seu e-mail" required>
+            </div>
+            <div class="mb-3">
+                <label for="senha" class="form-label">Senha</label>
+                <input type="password" class="form-control" id="senha" name="password" placeholder="Digite sua senha" required>
+            </div>
+            <div class="d-grid">
+                <button class="btn btn-primary" type="submit">Entrar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script th:if="${param.error}" th:inline="javascript">
+    Swal.fire({
+        icon: 'error',
+        title: 'Erro ao fazer login',
+        text: 'Usuário ou senha inválidos!'
+    });
+</script>
+
+<script th:if="${param.logout}" th:inline="javascript">
+    Swal.fire({
+        icon: 'success',
+        title: 'Logout efetuado',
+        text: 'Você saiu com sucesso.'
+    });
+</script>
+
+</body>
+</html>
