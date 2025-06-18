@@ -23,9 +23,5 @@ public class Usuario {
     private String senha;
 
     @Enumerated(EnumType.STRING)
-    private Perfil perfil;
-
-    public enum Perfil {
-        ADMIN, PROFESSOR, ALUNO
-    }
+    private Perfil perfil; // Agora ele vem do arquivo separado
 }
