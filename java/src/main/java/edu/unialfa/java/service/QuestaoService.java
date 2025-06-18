@@ -1,4 +1,4 @@
 package edu.unialfa.java.service;
 
-public class RespostaService {
+public class QuestaoService {
 }
