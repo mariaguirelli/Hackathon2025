@@ -9,5 +9,7 @@ import java.util.Optional;
 public interface AlunoRepository extends JpaRepository<Aluno, Long> {
     Optional<Aluno> findByRa(String ra);
 
-    Optional<Aluno> findByUsuario(Usuario usuario);
+    boolean existsByRa(String ra);
+
+    Aluno findByCpf(String cpf);
 }
