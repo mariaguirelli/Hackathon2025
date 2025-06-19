@@ -1,13 +1,24 @@
-<!-- resources/templates/shared/layout.html -->
 <!DOCTYPE html>
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head th:fragment="head">
     <meta charset="UTF-8">
-    <title>Sistema</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title th:text="${pageTitle} ?: 'Sistema'">Sistema</title>
+    <link rel="stylesheet" th:href="@{https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css}">
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script th:src="@{https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    <script src="/js/alerts.js"></script>
+    <script src="/js/cpfValidade.js"></script>
+    <script src="/js/mascaras.js"></script>
+
 </head>
 <body>
-<!-- Este é um layout base apenas para fragmentos -->
+
+<!-- seu conteúdo aqui -->
+<div th:replace="~{::content}"></div>
+
+
 </body>
 </html>

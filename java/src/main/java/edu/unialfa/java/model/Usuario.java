@@ -23,5 +23,14 @@ public class Usuario {
     private String senha;
 
     @Enumerated(EnumType.STRING)
-    private Perfil perfil; // Agora ele vem do arquivo separado
+    private Perfil perfil;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "aluno_id", unique = true)
+    private Aluno aluno;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "professor_id", unique = true)
+    private Professor professor;
 }
+
