@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="shared/layout :: head"></head>
+<body class="d-flex flex-column min-vh-100">
+
+<!-- Header fixo no topo -->
+<div th:replace="shared/fragments/header :: header"></div>
+
+<!-- Layout principal com sidebar + conteúdo -->
+<div class="d-flex flex-grow-1">
+    <div th:replace="shared/fragments/sidebar :: sidebar" class="h-100"></div>
+
+
+    <main class="flex-grow-1 p-4" style="background-color: #f8f9fa;">
+        <h2>Lista de Professores</h2>
+        <a href="/admin/professores/novo" class="btn btn-success mb-3">Novo Professor</a>
+
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+            <tr>
+                <th>Registro</th>
+                <th>Nome</th>
+                <th>CPF</th>
+                <th>Data de Nascimento</th>
+                <th>Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="professor : ${professores}">
+                <td th:text="${professor.registro}"></td>
+                <td th:text="${professor.nome + ' ' + professor.sobrenome}"></td>
+                <td class="cpf" th:text="${professor.cpf}"></td>
+                <td th:text="${#temporals.format(professor.dataNascimento, 'dd/MM/yyyy')}"></td>
+                <td>
+                    <a th:href="@{'/admin/professores/editar/' + ${professor.id}}" class="btn btn-primary btn-sm">Editar</a>
+                    <a href="#" class="btn btn-sm btn-danger"
+                       th:attr="onclick=|confirmarExclusao(() => { window.location.href='@{/admin/professores/excluir/{id}(id=${professor.id})}' })|">
+                        Excluir
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </main>
+</div>
+
+<div th:replace="shared/fragments/footer :: footer"></div>
+
+</body>
+</html>
