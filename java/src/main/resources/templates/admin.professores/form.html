@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="shared/layout :: head"></head>
+<body class="d-flex flex-column vh-100">
+
+<!-- Header fixo -->
+<div th:replace="shared/fragments/header :: header"></div>
+
+<!-- Área principal com sidebar + conteúdo -->
+<div class="d-flex flex-grow-1">
+    <div th:replace="shared/fragments/sidebar :: sidebar" class="h-100"></div>
+
+    <main class="flex-grow-1 p-4" style="background-color: #f8f9fa;">
+        <h2 th:text="${professor.id != null} ? 'Editar Professor' : 'Novo Professor'"></h2>
+
+        <form th:action="@{/professor/salvar}" th:object="${professor}" method="post">
+            <input type="hidden" th:field="*{id}"/>
+
+            <div class="mb-3">
+                <label class="form-label">Nome</label>
+                <input type="text" class="form-control" th:field="*{nome}" placeholder="Digite o nome" required/>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">CPF</label>
+                <input type="text" class="form-control validar-cpf" th:field="*{cpf}" placeholder="Digite o CPF" required maxlength="11"/>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Data de Nascimento</label>
+                <input type="date" class="form-control" th:field="*{dataNascimento}" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Registro</label>
+                <input type="text" class="form-control" th:field="*{registro}" placeholder="Digite o número de registro" required/>
+            </div>
+
+            <!-- Caso queira permitir selecionar o usuário associado -->
+            <!--
+            <div class="mb-3">
+                <label class="form-label">Usuário</label>
+                <select class="form-control" th:field="*{usuario.id}">
+                    <option th:each="usuario : ${usuarios}"
+                            th:value="${usuario.id}"
+                            th:text="${usuario.nome}">
+                    </option>
+                </select>
+            </div>
+            -->
+
+            <button type="submit" class="btn btn-success">Salvar</button>
+            <a href="/professor" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </main>
+</div>
+
+<!-- Footer colado no rodapé -->
+<div th:replace="shared/fragments/footer :: footer"></div>
+
+</body>
+</html>
