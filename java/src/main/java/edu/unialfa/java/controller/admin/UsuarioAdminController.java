@@ -1,53 +1,85 @@
-package edu.unialfa.java.controller.admin;
+package edu.unialfa.java.controller;
 
-import edu.unialfa.java.model.Perfil;
-import edu.unialfa.java.model.Usuario;
+import edu.unialfa.java.model.*;
+import edu.unialfa.java.repository.AlunoRepository;
+import edu.unialfa.java.repository.ProfessorRepository;
 import edu.unialfa.java.service.UsuarioService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 
 @Controller
-@RequestMapping("/usuario")
-@PreAuthorize("hasAuthority('ADMIN')")
+@RequestMapping("/admin/usuarios")
+@RequiredArgsConstructor
+
 public class UsuarioAdminController {
 
-    @Autowired
-    private UsuarioService usuarioService;
+    private final UsuarioService usuarioService;
+    private final AlunoRepository alunoRepository;
+    private final ProfessorRepository professorRepository;
 
     @GetMapping
-    public String listarAdmins(Model model) {
-        model.addAttribute("usuarios", usuarioService.listarPorPerfil(Perfil.ADMIN));
-        return "admin/usuarios/listar";
+    public String listar(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName(); // ou ((User) auth.getPrincipal()).getUsername()
+
+        model.addAttribute("usuarios", usuarioService.listarTodosExceto(email));
+        return "admin/usuarios/index";
     }
 
     @GetMapping("/novo")
-    public String novoAdmin(Model model) {
-        Usuario usuario = new Usuario();
-        usuario.setPerfil(Perfil.ADMIN); // força o perfil ADMIN
-        model.addAttribute("usuario", usuario);
-        return "admin/usuarios/formulario";
+    public String novo(Model model) {
+        model.addAttribute("usuario", new Usuario());
+        model.addAttribute("alunos", alunoRepository.findAll());
+        model.addAttribute("professores", professorRepository.findAll());
+        model.addAttribute("perfis", Perfil.values());
+        return "admin/usuarios/form";
     }
 
     @PostMapping("/salvar")
-    public String salvarAdmin(@ModelAttribute("usuario") Usuario usuario) {
-        usuario.setPerfil(Perfil.ADMIN); // garante que o perfil seja ADMIN
-        usuarioService.salvar(usuario);
+    public String salvar(@ModelAttribute Usuario usuario, RedirectAttributes redirectAttributes) {
+        try {
+            usuarioService.salvar(usuario);
+            redirectAttributes.addFlashAttribute("mensagem", "Usuário salvo com sucesso!");
+            redirectAttributes.addFlashAttribute("tipoMensagem", "sucesso");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("mensagem", e.getMessage()); // exemplo: "E-mail já está em uso"
+            redirectAttributes.addFlashAttribute("tipoMensagem", "erro");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("mensagem", "Erro ao salvar usuário: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("tipoMensagem", "erro");
+        }
+
         return "redirect:/admin/usuarios";
     }
+
 
     @GetMapping("/editar/{id}")
-    public String editarAdmin(@PathVariable Long id, Model model) {
-        model.addAttribute("usuario", usuarioService.buscarPorId(id));
-        return "admin/usuarios/formulario";
+    public String editar(@PathVariable Long id, Model model) {
+        Usuario usuario = usuarioService.buscarPorId(id);
+        model.addAttribute("usuario", usuario);
+        model.addAttribute("alunos", alunoRepository.findAll());
+        model.addAttribute("professores", professorRepository.findAll());
+        model.addAttribute("perfis", Perfil.values());
+        return "admin/usuarios/form";
     }
 
-    @GetMapping("/deletar/{id}")
-    public String deletarAdmin(@PathVariable Long id) {
-        usuarioService.deletar(id);
+    @GetMapping("/excluir/{id}")
+    public String excluir(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            usuarioService.excluir(id);
+            redirectAttributes.addFlashAttribute("mensagem", "Usuário excluído com sucesso!");
+            redirectAttributes.addFlashAttribute("tipoMensagem", "sucesso");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("mensagem", "Erro ao excluir usuário: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("tipoMensagem", "erro");
+        }
         return "redirect:/admin/usuarios";
     }
-}
 
+}

@@ -22,6 +22,10 @@ public class Usuario {
 
     private String senha;
 
+    @Column(name = "precisa_alterar_senha", nullable = false)
+    @Builder.Default
+    private Boolean precisaAlterarSenha = true;
+
     @Enumerated(EnumType.STRING)
     private Perfil perfil;
 
