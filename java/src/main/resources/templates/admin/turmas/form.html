@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="shared/layout :: head"></head>
+<body class="d-flex flex-column vh-100">
+
+<!-- Header fixo -->
+<div th:replace="shared/fragments/header :: header"></div>
+
+<!-- Área principal com sidebar + conteúdo -->
+<div class="d-flex flex-grow-1">
+    <div th:replace="shared/fragments/sidebar :: sidebar" class="h-100"></div>
+
+    <main class="flex-grow-1 p-4" style="background-color: #f8f9fa;">
+        <h2 th:text="${turma.id} != null ? 'Editar Turma' : 'Nova Turma'"></h2>
+
+        <form th:action="@{/admin/turmas/salvar}" th:object="${turma}" method="post">
+            <input type="hidden" th:field="*{id}"/>
+
+            <div class="mb-3">
+                <label class="form-label">Nome</label>
+                <input type="text" class="form-control" th:field="*{nome}" placeholder="Digite o nome da turma" required/>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Ano Letivo</label>
+                <input type="number" class="form-control" th:field="*{anoLetivo}" placeholder="Ex: aaaa" required/>
+            </div>
+
+            <button type="submit" class="btn btn-success">Salvar</button>
+            <a href="/admin/turmas" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </main>
+</div>
+
+<!-- Footer colado no rodapé -->
+<div th:replace="shared/fragments/footer :: footer"></div>
+
+</body>
+</html>
