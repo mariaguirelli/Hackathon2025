@@ -36,7 +36,7 @@ public class ProfessorService {
             professor.setRegistro(gerarRegistroUnico());
         }
 
-        Aluno existente = professorRepository.findByCpf(professor.getCpf());
+        Professor existente = professorRepository.findByCpf(professor.getCpf());
         if (existente != null && !existente.getId().equals(professor.getId())) {
             throw new CpfDuplicadoException("CPF já cadastrado para outro professor ou aluno.");
         }
