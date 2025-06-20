@@ -44,7 +44,26 @@
     </main>
 </div>
 
+
+<!-- Footer sempre no final -->
 <div th:replace="shared/fragments/footer :: footer"></div>
+
+<div th:if="${mensagem}" th:with="msg=${mensagem}, tipo=${tipoMensagem}">
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        let mensagem = /*[[${msg}]]*/ null;
+        let tipo = /*[[${tipo}]]*/ null;
+
+        if (mensagem && tipo) {
+            if (tipo === 'sucesso') {
+                alertaSucesso(mensagem);
+            } else if (tipo === 'erro') {
+                alertaErro(mensagem);
+            }
+        }
+        /*]]>*/
+    </script>
+</div>
 
 </body>
 </html>

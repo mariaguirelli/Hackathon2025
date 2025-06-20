@@ -32,22 +32,9 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Registro</label>
-                <input type="text" class="form-control" th:field="*{registro}" placeholder="Digite o número de registro" required/>
+                <label class="form-label">Registro (Gerado automaticamente)</label>
+                <input type="text" class="form-control" th:field="*{registro}" readonly/>
             </div>
-
-            <!-- Caso queira permitir selecionar o usuário associado -->
-            <!--
-            <div class="mb-3">
-                <label class="form-label">Usuário</label>
-                <select class="form-control" th:field="*{usuario.id}">
-                    <option th:each="usuario : ${usuarios}"
-                            th:value="${usuario.id}"
-                            th:text="${usuario.nome}">
-                    </option>
-                </select>
-            </div>
-            -->
 
             <button type="submit" class="btn btn-success">Salvar</button>
             <a href="/professor" class="btn btn-secondary">Cancelar</a>
