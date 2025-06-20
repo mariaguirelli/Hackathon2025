@@ -23,6 +23,9 @@ public class Professor {
     @Column(nullable = false)
     private String nome;
 
+    @Column(nullable = false)
+    private String sobrenome;
+
     @Column(nullable = false, unique = true, length = 5)
     private String registro; // número único, 5 dígitos (como RA)
 

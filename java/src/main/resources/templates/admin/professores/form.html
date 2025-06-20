@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="shared/layout :: head"></head>
+<head th:replace="~{shared/layout :: head}"></head>
 <body class="d-flex flex-column vh-100">
 
 <!-- Header fixo -->
@@ -13,12 +13,22 @@
     <main class="flex-grow-1 p-4" style="background-color: #f8f9fa;">
         <h2 th:text="${professor.id != null} ? 'Editar Professor' : 'Novo Professor'"></h2>
 
-        <form th:action="@{/professor/salvar}" th:object="${professor}" method="post">
+        <form th:action="@{/admin/professores/salvar}" th:object="${professor}" method="post">
             <input type="hidden" th:field="*{id}"/>
+
+            <div class="mb-3">
+                <label class="form-label">Registro (Gerado automaticamente)</label>
+                <input type="text" class="form-control" th:field="*{registro}" readonly/>
+            </div>
 
             <div class="mb-3">
                 <label class="form-label">Nome</label>
                 <input type="text" class="form-control" th:field="*{nome}" placeholder="Digite o nome" required/>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Nome</label>
+                <input type="text" class="form-control" th:field="*{sobrenome}" placeholder="Digite o sobrenome" required/>
             </div>
 
             <div class="mb-3">
@@ -28,16 +38,15 @@
 
             <div class="mb-3">
                 <label class="form-label">Data de Nascimento</label>
-                <input type="date" class="form-control" th:field="*{dataNascimento}" />
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Registro (Gerado automaticamente)</label>
-                <input type="text" class="form-control" th:field="*{registro}" readonly/>
+                <input
+                        type="date"
+                        class="form-control"
+                        th:name="dataNascimento"
+                        th:value="${professor.dataNascimento != null} ? ${#temporals.format(professor.dataNascimento, 'yyyy-MM-dd')} : ''" />
             </div>
 
             <button type="submit" class="btn btn-success">Salvar</button>
-            <a href="/professor" class="btn btn-secondary">Cancelar</a>
+            <a href="/admin/professores" class="btn btn-secondary">Cancelar</a>
         </form>
     </main>
 </div>

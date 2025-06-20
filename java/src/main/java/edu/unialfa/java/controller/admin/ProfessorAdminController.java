@@ -32,7 +32,7 @@ public class ProfessorAdminController {
     public String salvar(@ModelAttribute Professor professor, RedirectAttributes redirectAttributes) {
         try {
             professorService.salvar(professor);
-            redirectAttributes.addFlashAttribute("mensagem", "Aluno salvo com sucesso!");
+            redirectAttributes.addFlashAttribute("mensagem", "Professor salvo com sucesso!");
             redirectAttributes.addFlashAttribute("tipoMensagem", "sucesso");
         } catch (CpfDuplicadoException e) {
             redirectAttributes.addFlashAttribute("mensagem", e.getMessage());
@@ -41,7 +41,7 @@ public class ProfessorAdminController {
             redirectAttributes.addFlashAttribute("mensagem", e.getMessage());  // Mensagem da data inválida aqui
             redirectAttributes.addFlashAttribute("tipoMensagem", "erro");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("mensagem", "Erro ao salvar aluno: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("mensagem", "Erro ao salvar professor: " + e.getMessage());
             redirectAttributes.addFlashAttribute("tipoMensagem", "erro");
         }
         return "redirect:/admin/professores";
@@ -66,7 +66,7 @@ public class ProfessorAdminController {
             redirectAttributes.addFlashAttribute("mensagem", "Professor excluído com sucesso!");
             redirectAttributes.addFlashAttribute("tipoMensagem", "sucesso");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("mensagem", "Erro ao excluir professor: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("mensagem", "Erro ao excluir professor: ");
             redirectAttributes.addFlashAttribute("tipoMensagem", "erro");
         }
         return "redirect:/admin/professores";

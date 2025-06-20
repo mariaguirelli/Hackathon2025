@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{shared/layout :: head}"></head>
+<head th:replace="shared/layout :: head"></head>
 <body class="d-flex flex-column min-vh-100">
 
 <!-- Header fixo no topo -->
@@ -10,31 +10,28 @@
 <div class="d-flex flex-grow-1">
     <div th:replace="shared/fragments/sidebar :: sidebar" class="h-100"></div>
 
-
     <main class="flex-grow-1 p-4" style="background-color: #f8f9fa;">
-        <h2>Lista de Professores</h2>
-        <a href="/admin/professores/novo" class="btn btn-success mb-3">Novo Professor</a>
+        <h2>Vínculos Turma x Disciplina</h2>
+        <a href="/admin/turma-disciplinas/novo" class="btn btn-success mb-3">Novo Vínculo</a>
 
         <table class="table table-bordered table-striped">
             <thead class="table-dark">
             <tr>
-                <th>Registro</th>
-                <th>Nome</th>
-                <th>CPF</th>
-                <th>Data de Nascimento</th>
+                <th>Turma</th>
+                <th>Disciplina</th>
+                <th>Professor</th>
                 <th>Ações</th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="professor : ${professores}">
-                <td th:text="${professor.registro}"></td>
-                <td th:text="${professor.nome + ' ' + professor.sobrenome}"></td>
-                <td class="cpf" th:text="${professor.cpf}"></td>
-                <td th:text="${#temporals.format(professor.dataNascimento, 'dd/MM/yyyy')}"></td>
+            <tr th:each="v : ${lista}">
+                <td th:text="${v.turma.nome}"></td>
+                <td th:text="${v.disciplina.nome}"></td>
+                <td th:text="${v.professor.nome + ' ' + v.professor.sobrenome}"></td>
                 <td>
-                    <a th:href="@{'/admin/professores/editar/' + ${professor.id}}" class="btn btn-primary btn-sm">Editar</a>
+                    <a th:href="@{'/admin/turma-disciplinas/editar/' + ${v.id}}" class="btn btn-primary btn-sm">Editar</a>
                     <a href="#" class="btn btn-sm btn-danger"
-                       th:attr="onclick=|confirmarExclusao(() => { window.location.href='@{/admin/professores/excluir/{id}(id=${professor.id})}' })|">
+                       th:attr="onclick=|confirmarExclusao(() => { window.location.href='@{/admin/turma-disciplinas/excluir/{id}(id=${v.id})}' })|">
                         Excluir
                     </a>
                 </td>
@@ -44,10 +41,10 @@
     </main>
 </div>
 
-
 <!-- Footer sempre no final -->
 <div th:replace="shared/fragments/footer :: footer"></div>
 
+<!-- Mensagem de sucesso/erro -->
 <div th:if="${mensagem}" th:with="msg=${mensagem}, tipo=${tipoMensagem}">
     <script th:inline="javascript">
         /*<![CDATA[*/
