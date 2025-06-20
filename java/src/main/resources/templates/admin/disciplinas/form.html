@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="shared/layout :: head"></head>
+<body class="d-flex flex-column vh-100">
+
+<!-- Header fixo -->
+<div th:replace="shared/fragments/header :: header"></div>
+
+<!-- Área principal com sidebar + conteúdo -->
+<div class="d-flex flex-grow-1">
+    <div th:replace="shared/fragments/sidebar :: sidebar" class="h-100"></div>
+
+    <main class="flex-grow-1 p-4" style="background-color: #f8f9fa;">
+        <h2 th:text="${disciplina.id} != null ? 'Editar Disciplina' : 'Nova Disciplina'"></h2>
+
+        <form th:action="@{/admin/disciplinas/salvar}" th:object="${disciplina}" method="post">
+            <input type="hidden" th:field="*{id}"/>
+
+            <div class="mb-3">
+                <label class="form-label">Nome</label>
+                <input type="text" class="form-control" th:field="*{nome}" placeholder="Digite o nome da disciplina" required/>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Descrição</label>
+                <textarea class="form-control" th:field="*{descricao}" placeholder="Descreva a disciplina" rows="4" required></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Carga Horária (em horas)</label>
+                <input type="number" class="form-control" th:field="*{cargaHoraria}" placeholder="Ex: 60" min="1" required/>
+            </div>
+
+            <button type="submit" class="btn btn-success">Salvar</button>
+            <a href="/admin/disciplinas" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </main>
+</div>
+
+<!-- Footer colado no rodapé -->
+<div th:replace="shared/fragments/footer :: footer"></div>
+
+</body>
+</html>
