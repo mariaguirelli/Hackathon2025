@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="shared/layout :: head"></head>
-<body class="d-flex flex-column vh-100">
+<body class="d-flex flex-column min-vh-100">
 
 <div th:replace="shared/fragments/header :: header"></div>
 
@@ -15,5 +15,23 @@
 </div>
 
 <div th:replace="shared/fragments/footer :: footer"></div>
+
+<div th:if="${mensagem}" th:with="msg=${mensagem}, tipo=${tipoMensagem}">
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        let mensagem = /*[[${msg}]]*/ null;
+        let tipo = /*[[${tipo}]]*/ null;
+
+        if (mensagem && tipo) {
+            if (tipo === 'sucesso') {
+                alertaSucesso(mensagem);
+            } else if (tipo === 'erro') {
+                alertaErro(mensagem);
+            }
+        }
+        /*]]>*/
+    </script>
+</div>
+
 </body>
 </html>
