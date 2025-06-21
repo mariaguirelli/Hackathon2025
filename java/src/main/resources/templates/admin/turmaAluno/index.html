@@ -24,7 +24,7 @@
             </thead>
             <tbody>
             <tr th:each="v : ${lista}">
-                <td th:text="${v.turma.nome}"></td>
+                <td th:text="${v.turma.nome + ' - ' + v.turma.anoLetivo}"></td>
                 <td th:text="${v.aluno.nome}"></td>
                 <td>
                     <a th:href="@{'/admin/turma-alunos/editar/' + ${v.id}}" class="btn btn-primary btn-sm">Editar</a>

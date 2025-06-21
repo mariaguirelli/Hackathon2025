@@ -1,12 +1,44 @@
-<nav th:fragment="sidebar" class="bg-light border-end h-100" style="width: 250px;">
+<nav th:fragment="sidebar"
+     xmlns:th="http://www.thymeleaf.org"
+     xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+     class="bg-light border-end h-100"
+     style="width: 250px;">
+
     <ul class="nav flex-column p-3">
         <li><a href="/home" class="nav-link active">Início</a></li>
-        <li><a href="/admin/alunos" class="nav-link">Alunos</a></li>
-        <li><a href="/admin/professores" class="nav-link">Professores</a></li>
-        <li><a href="/admin/usuarios" class="nav-link">Usuarios</a></li>
-        <li><a href="/admin/disciplinas" class="nav-link">Disciplinas</a></li>
-        <li><a href="/admin/turmas" class="nav-link">Turmas</a></li>
-        <li><a href="/admin/turma-disciplinas" class="nav-link">Turma Disciplinas</a>
-        <li><a href="/professor/provas" class="nav-link">Provas</a></li>
+
+        <!-- Apenas ADMIN -->
+        <li sec:authorize="hasAuthority('ADMIN')">
+            <a href="/admin/alunos" class="nav-link">Alunos</a>
+        </li>
+        <li sec:authorize="hasAuthority('ADMIN')">
+            <a href="/admin/professores" class="nav-link">Professores</a>
+        </li>
+        <li sec:authorize="hasAuthority('ADMIN')">
+            <a href="/admin/usuarios" class="nav-link">Usuários</a>
+        </li>
+        <li sec:authorize="hasAuthority('ADMIN')">
+            <a href="/admin/disciplinas" class="nav-link">Disciplinas</a>
+        </li>
+        <li sec:authorize="hasAuthority('ADMIN')">
+            <a href="/admin/turmas" class="nav-link">Turmas</a>
+        </li>
+        <li sec:authorize="hasAuthority('ADMIN')">
+            <a href="/admin/turma-disciplinas" class="nav-link">Turma Disciplinas</a>
+        </li>
+        <li sec:authorize="hasAuthority('ADMIN')">
+            <a href="/admin/turma-alunos" class="nav-link">Turma Alunos</a>
+        </li>
+
+        <!-- Apenas PROFESSOR -->
+        <li sec:authorize="hasAuthority('PROFESSOR')">
+            <a href="/professor/provas" class="nav-link">Provas</a>
+        </li>
+
+        <!-- Apenas ALUNO -->
+        <li sec:authorize="hasAuthority('ALUNO')">
+            <a href="/aluno/provas" class="nav-link">Minhas Provas</a>
+        </li>
     </ul>
+
 </nav>

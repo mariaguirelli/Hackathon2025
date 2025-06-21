@@ -20,7 +20,7 @@
                     <option value="" disabled selected>Selecione a turma</option>
                     <option th:each="turma : ${turmas}"
                             th:value="${turma.id}"
-                            th:text="${turma.nome}">Turma</option>
+                            th:text="${turma.nome + ' - ' + turma.anoLetivo}">Turma</option>
                 </select>
             </div>
 
