@@ -27,4 +27,3 @@ class Usuario {
         'perfil': perfil,
       };
 }
-    

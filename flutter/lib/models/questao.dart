@@ -35,6 +35,3 @@ class Questao {
         'e': e,
       };
 }
-List<Questao> questoesFromJson(List<dynamic> json) {
-  return json.map((item) => Questao.fromJson(item)).toList();
-} 

@@ -16,6 +16,3 @@ class Turma {
         'nome': nome,
       };
 }
-  List<Turma> turmasFromJson(List<dynamic> json) {
-  return json.map((item) => Turma.fromJson(item)).toList();
-}

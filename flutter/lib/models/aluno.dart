@@ -16,6 +16,3 @@ class Aluno {
         'nome': nome,
       };
 }
-List<Aluno> alunosFromJson(List<dynamic> json) {
-  return json.map((item) => Aluno.fromJson(item)).toList();
-}
