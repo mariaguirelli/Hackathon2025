@@ -3,6 +3,8 @@ package edu.unialfa.java.model;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "provas")
@@ -25,4 +27,20 @@ public class Prova {
     private TurmaDisciplina turmaDisciplina;
 
     private Integer bimestre;
+
+    @OneToMany(mappedBy = "prova", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<Questao> questoes = new ArrayList<>();
+
+    // Método auxiliar para adicionar questão e manter relação bidirecional
+    public void adicionarQuestao(Questao questao) {
+        questoes.add(questao);
+        questao.setProva(this);
+    }
+
+    // Método auxiliar para remover questão e manter relação bidirecional
+    public void removerQuestao(Questao questao) {
+        questoes.remove(questao);
+        questao.setProva(null);
+    }
 }

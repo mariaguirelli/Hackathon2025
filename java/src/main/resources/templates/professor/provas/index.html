@@ -3,33 +3,40 @@
 <head th:replace="shared/layout :: head"></head>
 <body class="d-flex flex-column min-vh-100">
 
-<!-- Header fixo no topo -->
+<!-- Header -->
 <div th:replace="shared/fragments/header :: header"></div>
 
-<!-- Layout principal com sidebar + conteúdo -->
+<!-- Sidebar + Conteúdo -->
 <div class="d-flex flex-grow-1">
     <div th:replace="shared/fragments/sidebar :: sidebar" class="h-100"></div>
 
     <main class="flex-grow-1 p-4" style="background-color: #f8f9fa;">
-        <h2>Lista de Turmas</h2>
-        <a href="/admin/turmas/nova" class="btn btn-success mb-3">Nova Turma</a>
+        <h2>Provas Cadastradas</h2>
+
+        <a href="/professor/provas/novo" class="btn btn-success mb-3">Nova Prova</a>
 
         <table class="table table-bordered table-striped">
             <thead class="table-dark">
             <tr>
-                <th>Nome</th>
-                <th>Ano Letivo</th>
+                <th>Título</th>
+                <th>Disciplina</th>
+                <th>Turma</th>
+                <th>Bimestre</th>
+                <th>Data</th>
                 <th>Ações</th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="turma : ${turmas}">
-                <td th:text="${turma.nome}"></td>
-                <td th:text="${turma.anoLetivo}"></td>
+            <tr th:each="prova : ${provas}">
+                <td th:text="${prova.titulo}">Título</td>
+                <td th:text="${prova.turmaDisciplina.disciplina.nome}">Disciplina</td>
+                <td th:text="${prova.turmaDisciplina.turma.nome + ' - ' + prova.turmaDisciplina.turma.anoLetivo}">Turma - Ano</td>
+                <td th:text="${prova.bimestre + 'º Bimestre'}"></td>
+                <td th:text="${#temporals.format(prova.dataAplicacao, 'dd/MM/yyyy')}"></td>
                 <td>
-                    <a th:href="@{'/admin/turmas/editar/' + ${turma.id}}" class="btn btn-primary btn-sm">Editar</a>
-                    <a href="#" class="btn btn-danger btn-sm"
-                       th:attr="onclick=|confirmarExclusao(() => { window.location.href='@{/admin/turmas/excluir/{id}(id=${turma.id})}' })|">
+                    <a th:href="@{'/professor/provas/editar/' + ${prova.id}}" class="btn btn-sm btn-primary">Editar</a>
+                    <a href="#" class="btn btn-sm btn-danger"
+                       th:attr="onclick=|confirmarExclusao(() => { window.location.href='@{/professor/provas/excluir/{id}(id=${prova.id})}' })|">
                         Excluir
                     </a>
                 </td>
@@ -39,10 +46,10 @@
     </main>
 </div>
 
-<!-- Footer sempre no final -->
+<!-- Footer -->
 <div th:replace="shared/fragments/footer :: footer"></div>
 
-<!-- Feedback com SweetAlert -->
+<!-- Feedback SweetAlert -->
 <div th:if="${mensagem}" th:with="msg=${mensagem}, tipo=${tipoMensagem}">
     <script th:inline="javascript">
         /*<![CDATA[*/
