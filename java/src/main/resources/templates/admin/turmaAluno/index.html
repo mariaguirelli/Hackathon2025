@@ -11,25 +11,25 @@
     <div th:replace="shared/fragments/sidebar :: sidebar" class="h-100"></div>
 
     <main class="flex-grow-1 p-4" style="background-color: #f8f9fa;">
-        <h2>Lista de Turmas</h2>
-        <a href="/admin/turmas/nova" class="btn btn-success mb-3">Nova Turma</a>
+        <h2>Vínculos Turma x Aluno</h2>
+        <a href="/admin/turma-alunos/novo" class="btn btn-success mb-3">Novo Vínculo</a>
 
         <table class="table table-bordered table-striped">
             <thead class="table-dark">
             <tr>
-                <th>Nome</th>
-                <th>Ano Letivo</th>
+                <th>Turma</th>
+                <th>Aluno</th>
                 <th>Ações</th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="turma : ${turmas}">
-                <td th:text="${turma.nome}"></td>
-                <td th:text="${turma.anoLetivo}"></td>
+            <tr th:each="v : ${lista}">
+                <td th:text="${v.turma.nome}"></td>
+                <td th:text="${v.aluno.nome}"></td>
                 <td>
-                    <a th:href="@{'/admin/turmas/editar/' + ${turma.id}}" class="btn btn-primary btn-sm">Editar</a>
-                    <a href="#" class="btn btn-danger btn-sm"
-                       th:attr="onclick=|confirmarExclusao(() => { window.location.href='@{/admin/turmas/excluir/{id}(id=${turma.id})}' })|">
+                    <a th:href="@{'/admin/turma-alunos/editar/' + ${v.id}}" class="btn btn-primary btn-sm">Editar</a>
+                    <a href="#" class="btn btn-sm btn-danger"
+                       th:attr="onclick=|confirmarExclusao(() => { window.location.href='@{/admin/turma-alunos/excluir/{id}(id=${v.id})}' })|">
                         Excluir
                     </a>
                 </td>
@@ -42,7 +42,7 @@
 <!-- Footer sempre no final -->
 <div th:replace="shared/fragments/footer :: footer"></div>
 
-<!-- Feedback com SweetAlert -->
+<!-- Mensagem de sucesso/erro -->
 <div th:if="${mensagem}" th:with="msg=${mensagem}, tipo=${tipoMensagem}">
     <script th:inline="javascript">
         /*<![CDATA[*/

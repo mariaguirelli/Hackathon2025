@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="shared/layout :: head"></head>
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="shared/fragments/header :: header"></div>
+
+<div class="d-flex flex-grow-1">
+    <div th:replace="shared/fragments/sidebar :: sidebar" class="h-100"></div>
+
+    <main class="flex-grow-1 p-4" style="background-color: #f8f9fa;">
+        <h2 th:text="${turmaAluno.id != null} ? 'Editar Vinculação' : 'Nova Vinculação'"></h2>
+
+        <form th:action="@{/admin/turma-alunos/salvar}" th:object="${turmaAluno}" method="post">
+            <input type="hidden" th:if="${turmaAluno.id != null}" th:field="*{id}"/>
+
+            <div class="mb-3">
+                <label class="form-label">Turma</label>
+                <select class="form-control" th:field="*{turma.id}" required>
+                    <option value="" disabled selected>Selecione a turma</option>
+                    <option th:each="turma : ${turmas}"
+                            th:value="${turma.id}"
+                            th:text="${turma.nome}">Turma</option>
+                </select>
+            </div>
+
+            <!-- Aluno -->
+            <div class="mb-3">
+                <label class="form-label">Aluno</label>
+                <select class="form-control" th:field="*{aluno.id}" required>
+                    <option value="" disabled selected>Selecione o aluno</option>
+                    <option th:each="aluno : ${alunos}"
+                            th:value="${aluno.id}"
+                            th:text="${aluno.nome}">Aluno</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Salvar</button>
+            <a href="/admin/turma-alunos" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </main>
+</div>
+
+<div th:replace="shared/fragments/footer :: footer"></div>
+
+<!-- Mensagens de alerta (SweetAlert2) -->
+<div th:if="${mensagem}" th:with="msg=${mensagem}, tipo=${tipoMensagem}">
+    <script th:inline="javascript">
+        let mensagem = /*[[${msg}]]*/ null;
+        let tipo = /*[[${tipo}]]*/ null;
+
+        if (mensagem && tipo) {
+            if (tipo === 'sucesso') {
+                alertaSucesso(mensagem);
+            } else if (tipo === 'erro') {
+                alertaErro(mensagem);
+            }
+        }
+    </script>
+</div>
+
+</body>
+</html>
