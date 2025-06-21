@@ -29,4 +29,17 @@ public class TurmaDisciplinaService {
     public void excluir(Long id) {
         repository.deleteById(id);
     }
+
+    public List<TurmaDisciplina> listarPorProfessorLogado() {
+        // Aqui você deve obter o professor logado do contexto de segurança
+        // Exemplo fictício:
+        Long professorId = obterProfessorLogadoId();
+
+        return repository.findByProfessorId(professorId);
+    }
+
+    private Long obterProfessorLogadoId() {
+        // Implementar pegar o ID do professor logado pelo SecurityContext
+        return 1L; // placeholder
+    }
 }

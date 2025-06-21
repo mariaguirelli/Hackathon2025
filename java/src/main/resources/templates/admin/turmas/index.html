@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="shared/layout :: head"></head>
+<body class="d-flex flex-column min-vh-100">
+
+<!-- Header fixo no topo -->
+<div th:replace="shared/fragments/header :: header"></div>
+
+<!-- Layout principal com sidebar + conteúdo -->
+<div class="d-flex flex-grow-1">
+    <div th:replace="shared/fragments/sidebar :: sidebar" class="h-100"></div>
+
+    <main class="flex-grow-1 p-4" style="background-color: #f8f9fa;">
+        <h2>Lista de Turmas</h2>
+        <a href="/admin/turmas/nova" class="btn btn-success mb-3">Nova Turma</a>
+
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+            <tr>
+                <th>Nome</th>
+                <th>Ano Letivo</th>
+                <th>Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="turma : ${turmas}">
+                <td th:text="${turma.nome}"></td>
+                <td th:text="${turma.anoLetivo}"></td>
+                <td>
+                    <a th:href="@{'/admin/turmas/editar/' + ${turma.id}}" class="btn btn-primary btn-sm">Editar</a>
+                    <a href="#" class="btn btn-danger btn-sm"
+                       th:attr="onclick=|confirmarExclusao(() => { window.location.href='@{/admin/turmas/excluir/{id}(id=${turma.id})}' })|">
+                        Excluir
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </main>
+</div>
+
+<!-- Footer sempre no final -->
+<div th:replace="shared/fragments/footer :: footer"></div>
+
+<!-- Feedback com SweetAlert -->
+<div th:if="${mensagem}" th:with="msg=${mensagem}, tipo=${tipoMensagem}">
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        let mensagem = /*[[${msg}]]*/ null;
+        let tipo = /*[[${tipo}]]*/ null;
+
+        if (mensagem && tipo) {
+            if (tipo === 'sucesso') {
+                alertaSucesso(mensagem);
+            } else if (tipo === 'erro') {
+                alertaErro(mensagem);
+            }
+        }
+        /*]]>*/
+    </script>
+</div>
+
+</body>
+</html>
