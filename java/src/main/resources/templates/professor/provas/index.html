@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="shared/layout :: head"></head>
+<body class="d-flex flex-column min-vh-100">
+
+<!-- Header -->
+<div th:replace="shared/fragments/header :: header"></div>
+
+<!-- Sidebar + Conteúdo -->
+<div class="d-flex flex-grow-1">
+    <div th:replace="shared/fragments/sidebar :: sidebar" class="h-100"></div>
+
+    <main class="flex-grow-1 p-4" style="background-color: #f8f9fa;">
+        <h2>Provas Cadastradas</h2>
+
+        <a href="/professor/provas/novo" class="btn btn-success mb-3">Nova Prova</a>
+
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+            <tr>
+                <th>Título</th>
+                <th>Disciplina</th>
+                <th>Turma</th>
+                <th>Bimestre</th>
+                <th>Data</th>
+                <th>Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="prova : ${provas}">
+                <td th:text="${prova.titulo}">Título</td>
+                <td th:text="${prova.turmaDisciplina.disciplina.nome}">Disciplina</td>
+                <td th:text="${prova.turmaDisciplina.turma.nome + ' - ' + prova.turmaDisciplina.turma.anoLetivo}">Turma - Ano</td>
+                <td th:text="${prova.bimestre + 'º Bimestre'}"></td>
+                <td th:text="${#temporals.format(prova.dataAplicacao, 'dd/MM/yyyy')}"></td>
+                <td>
+                    <a th:href="@{'/professor/provas/editar/' + ${prova.id}}" class="btn btn-sm btn-primary">Editar</a>
+                    <a href="#" class="btn btn-sm btn-danger"
+                       th:attr="onclick=|confirmarExclusao(() => { window.location.href='@{/professor/provas/excluir/{id}(id=${prova.id})}' })|">
+                        Excluir
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </main>
+</div>
+
+<!-- Footer -->
+<div th:replace="shared/fragments/footer :: footer"></div>
+
+<!-- Feedback SweetAlert -->
+<div th:if="${mensagem}" th:with="msg=${mensagem}, tipo=${tipoMensagem}">
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        let mensagem = /*[[${msg}]]*/ null;
+        let tipo = /*[[${tipo}]]*/ null;
+
+        if (mensagem && tipo) {
+            if (tipo === 'sucesso') {
+                alertaSucesso(mensagem);
+            } else if (tipo === 'erro') {
+                alertaErro(mensagem);
+            }
+        }
+        /*]]>*/
+    </script>
+</div>
+
+</body>
+</html>
