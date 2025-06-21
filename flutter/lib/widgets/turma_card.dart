@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import '../models/aluno.dart';
+import '../models/turma.dart';
 
-class AlunoCard extends StatelessWidget {
-  final Aluno aluno;
+class TurmaCard extends StatelessWidget {
+  final Turma turma;
   final VoidCallback onTap;
 
-  const AlunoCard({
+  const TurmaCard({
     super.key,
-    required this.aluno,
+    required this.turma,
     required this.onTap,
   });
 
@@ -16,9 +16,8 @@ class AlunoCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: ListTile(
-        title: Text(aluno.nome),
-        leading: const Icon(Icons.person),
-        trailing: const Icon(Icons.edit_note),
+        title: Text(turma.nome),
+        trailing: const Icon(Icons.arrow_forward_ios),
         onTap: onTap,
       ),
     );
