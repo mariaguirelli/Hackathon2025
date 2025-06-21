@@ -29,9 +29,7 @@ public class ProvaController {
 
     @GetMapping
     public String listarProvas(Model model) {
-        // Aqui deve pegar o professor logado e filtrar as provas dele
-        // Para simplificar, retorna todas as provas
-        List<Prova> provas = provaService.listarProvasPorProfessor(null);
+        List<Prova> provas = provaService.listarProvasPorProfessorLogado();
         model.addAttribute("provas", provas);
         return "professor/provas/index";
     }

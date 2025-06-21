@@ -1,39 +1,43 @@
 <!DOCTYPE html>
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="shared/layout :: head"></head>
-<body class="d-flex flex-column vh-100">
+<body class="d-flex flex-column min-vh-100 bg-light">
 
-<!-- Header fixo -->
+<!-- Header -->
 <div th:replace="shared/fragments/header :: header"></div>
 
 <!-- Área principal com sidebar + conteúdo -->
 <div class="d-flex flex-grow-1">
   <div th:replace="shared/fragments/sidebar :: sidebar" class="h-100"></div>
 
-  <main class="flex-grow-1 p-4" style="background-color: #f8f9fa;">
-    <h2 th:text="${usuario.id} != null ? 'Editar Usuário' : 'Novo Usuário'"></h2>
+  <main class="flex-grow-1 p-4 bg-white shadow-sm rounded m-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="mb-0" th:text="${usuario.id} != null ? 'Editar Usuário' : 'Novo Usuário'"></h2>
+      <a href="/admin/usuarios" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Voltar
+      </a>
+    </div>
 
     <form th:action="@{/admin/usuarios/salvar}" th:object="${usuario}" method="post">
       <input type="hidden" th:field="*{id}" />
 
       <div class="mb-3">
-        <label class="form-label">Nome</label>
+        <label class="form-label fw-semibold">Nome</label>
         <input type="text" class="form-control" th:field="*{nome}" placeholder="Digite o nome completo" required />
       </div>
 
       <div class="mb-3">
-        <label class="form-label">E-mail</label>
+        <label class="form-label fw-semibold">E-mail</label>
         <input type="email" class="form-control" th:field="*{email}" placeholder="Digite o e-mail" required />
       </div>
 
-      <!-- Campo Senha só aparece na edição -->
       <div class="mb-3" th:if="${usuario.id != null}">
-        <label class="form-label">Senha (deixe em branco para manter a atual)</label>
+        <label class="form-label fw-semibold">Senha (deixe em branco para manter a atual)</label>
         <input type="password" class="form-control" th:field="*{senha}" placeholder="Digite a nova senha" />
       </div>
 
       <div class="mb-3">
-        <label class="form-label">Perfil</label>
+        <label class="form-label fw-semibold">Perfil</label>
         <select class="form-select" th:field="*{perfil}" id="perfil-select" required>
           <option value="">Selecione um perfil</option>
           <option th:each="p : ${perfis}" th:value="${p}" th:text="${p}"></option>
@@ -41,7 +45,7 @@
       </div>
 
       <div class="mb-3" id="aluno-select-div">
-        <label class="form-label">Aluno</label>
+        <label class="form-label fw-semibold">Aluno</label>
         <select class="form-select" th:field="*{aluno}">
           <option value="">Selecione um aluno</option>
           <option th:each="a : ${alunos}" th:value="${a.id}" th:text="${a.nome + ' ' + a.sobrenome}"></option>
@@ -49,23 +53,28 @@
       </div>
 
       <div class="mb-3" id="professor-select-div">
-        <label class="form-label">Professor</label>
+        <label class="form-label fw-semibold">Professor</label>
         <select class="form-select" th:field="*{professor}">
           <option value="">Selecione um professor</option>
-          <option th:each="p : ${professores}" th:value="${p.id}" th:text="${p.nome}"></option>
+          <option th:each="p : ${professores}" th:value="${p.id}" th:text="${p.nome + ' ' + p.sobrenome}"></option>
         </select>
       </div>
 
-      <button type="submit" class="btn btn-success">Salvar</button>
-      <a href="/admin/usuarios" class="btn btn-secondary">Cancelar</a>
+      <div class="mt-4 d-flex gap-2">
+        <button type="submit" class="btn btn-success">
+          <i class="bi bi-check-circle-fill"></i> Salvar
+        </button>
+        <a href="/admin/usuarios" class="btn btn-secondary">
+          <i class="bi bi-x-circle-fill"></i> Cancelar
+        </a>
+      </div>
     </form>
-
 
     <script>
       function alternarCampos() {
-          const perfil = document.getElementById('perfil-select').value;
-          document.getElementById('aluno-select-div').style.display = perfil === 'ALUNO' ? 'block' : 'none';
-          document.getElementById('professor-select-div').style.display = perfil === 'PROFESSOR' ? 'block' : 'none';
+        const perfil = document.getElementById('perfil-select').value;
+        document.getElementById('aluno-select-div').style.display = perfil === 'ALUNO' ? 'block' : 'none';
+        document.getElementById('professor-select-div').style.display = perfil === 'PROFESSOR' ? 'block' : 'none';
       }
 
       document.getElementById('perfil-select').addEventListener('change', alternarCampos);
@@ -75,7 +84,7 @@
   </main>
 </div>
 
-<!-- Footer colado no rodapé -->
+<!-- Footer -->
 <div th:replace="shared/fragments/footer :: footer"></div>
 
 </body>

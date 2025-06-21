@@ -1,4 +1,4 @@
-package edu.unialfa.java.controller;
+package edu.unialfa.java.controller.admin;
 
 import edu.unialfa.java.model.*;
 import edu.unialfa.java.repository.AlunoRepository;

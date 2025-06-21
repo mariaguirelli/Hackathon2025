@@ -1,32 +1,42 @@
 package edu.unialfa.java.service;
 
-import edu.unialfa.java.model.Prova;
-import edu.unialfa.java.model.Questao;
-import edu.unialfa.java.model.TurmaDisciplina;
+import edu.unialfa.java.model.*;
 import edu.unialfa.java.repository.ProvaRepository;
-import jakarta.persistence.EntityNotFoundException;
+import edu.unialfa.java.repository.UsuarioRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.Year;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ProvaService {
 
+    private final UsuarioRepository usuarioRepository;
     private final ProvaRepository provaRepository;
 
-    public ProvaService(ProvaRepository provaRepository) {
+    public ProvaService(ProvaRepository provaRepository, UsuarioRepository usuarioRepository) {
         this.provaRepository = provaRepository;
+        this.usuarioRepository = usuarioRepository;
     }
 
-    public List<Prova> listarProvasPorProfessor(Long professorId) {
-        // Aqui você precisa implementar uma query para pegar provas que são das turmas disciplinas do professor
-        // Supondo que você tem uma forma de pegar TurmaDisciplina do professor.
-        // Para simplificar, vamos pegar todas as provas (ajuste conforme seu sistema)
-        return provaRepository.findAll();
+    public List<Prova> listarProvasPorProfessorLogado() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalStateException("Usuário não encontrado."));
+
+
+        if (usuario == null || usuario.getProfessor() == null) {
+            throw new IllegalStateException("Usuário ou professor não encontrado ou não autenticado.");
+        }
+
+        Professor professor = usuario.getProfessor();
+
+        return provaRepository.findByTurmaDisciplina_Professor(professor);
     }
+
+
 
     public Prova salvar(Prova prova) {
         TurmaDisciplina td = prova.getTurmaDisciplina();
@@ -60,6 +70,21 @@ public class ProvaService {
         if (provaMesmoDia.isPresent() && (prova.getId() == null || !provaMesmoDia.get().getId().equals(prova.getId()))) {
             throw new IllegalStateException("Já existe uma prova marcada para essa turma, disciplina e bimestre na mesma data.");
         }
+
+        if (prova.getQuestoes() == null || prova.getQuestoes().isEmpty()) {
+            throw new IllegalArgumentException("A prova deve conter pelo menos uma questão.");
+        }
+
+        if (prova.getQuestoes() != null && !prova.getQuestoes().isEmpty()) {
+            double somaNotas = prova.getQuestoes().stream()
+                    .mapToDouble(Questao::getValor)
+                    .sum();
+
+            if (Math.abs(somaNotas - 6.0) > 0.0001) {
+                throw new IllegalArgumentException("A soma das notas das questões deve ser exatamente 6.0. Atualmente está em: " + somaNotas);
+            }
+        }
+
 
         if (prova.getQuestoes() != null) {
             for (Questao questao : prova.getQuestoes()) {

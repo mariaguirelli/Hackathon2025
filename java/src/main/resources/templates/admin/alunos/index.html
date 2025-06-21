@@ -1,51 +1,60 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="shared/layout :: head"></head>
-<body class="d-flex flex-column min-vh-100">
+<body class="d-flex flex-column min-vh-100 bg-light">
 
-<!-- Header fixo no topo -->
+<!-- Header -->
 <div th:replace="shared/fragments/header :: header"></div>
 
 <!-- Layout principal com sidebar + conteúdo -->
 <div class="d-flex flex-grow-1">
     <div th:replace="shared/fragments/sidebar :: sidebar" class="h-100"></div>
 
-    <main class="flex-grow-1 p-4" style="background-color: #f8f9fa;">
-        <h2>Lista de Alunos</h2>
-        <a href="/admin/alunos/novo" class="btn btn-success mb-3">Novo Aluno</a>
+    <main class="flex-grow-1 p-4 bg-white shadow-sm rounded m-3">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">Lista de Alunos</h2>
+            <a href="/admin/alunos/novo" class="btn btn-success">
+                <i class="bi bi-plus-circle-fill"></i> Novo Aluno
+            </a>
+        </div>
 
-        <table class="table table-bordered table-striped">
-            <thead class="table-dark">
-            <tr>
-                <th>RA</th>
-                <th>Nome Completo</th>
-                <th>CPF</th>
-                <th>Data de Nascimento</th>
-                <th>Ações</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="aluno : ${alunos}">
-                <td th:text="${aluno.ra}"></td>
-                <td th:text="${aluno.nome + ' ' + aluno.sobrenome}"></td>
-                <td class="cpf" th:text="${aluno.cpf}"></td>
-                <td th:text="${#temporals.format(aluno.dataNascimento, 'dd/MM/yyyy')}"></td>
-                <td>
-                    <a th:href="@{'/admin/alunos/editar/' + ${aluno.id}}" class="btn btn-primary btn-sm">Editar</a>
-                    <a href="#" class="btn btn-sm btn-danger"
-                       th:attr="onclick=|confirmarExclusao(() => { window.location.href='@{/admin/alunos/excluir/{id}(id=${aluno.id})}' })|">
-                        Excluir
-                    </a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered align-middle">
+                <thead class="table-primary text-center">
+                <tr>
+                    <th>RA</th>
+                    <th>Nome Completo</th>
+                    <th>CPF</th>
+                    <th>Data de Nascimento</th>
+                    <th class="text-center">Ações</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="aluno : ${alunos}">
+                    <td th:text="${aluno.ra}"></td>
+                    <td th:text="${aluno.nome + ' ' + aluno.sobrenome}"></td>
+                    <td class="cpf" th:text="${aluno.cpf}"></td>
+                    <td th:text="${#temporals.format(aluno.dataNascimento, 'dd/MM/yyyy')}"></td>
+                    <td class="text-center">
+                        <a th:href="@{'/admin/alunos/editar/' + ${aluno.id}}" class="btn btn-outline-primary btn-sm me-1">
+                            <i class="bi bi-pencil-fill"></i>
+                        </a>
+                        <button class="btn btn-outline-danger btn-sm"
+                                th:attr="onclick=|confirmarExclusao(() => { window.location.href='@{/admin/alunos/excluir/{id}(id=${aluno.id})}' })|">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </main>
 </div>
 
-<!-- Footer sempre no final -->
+<!-- Footer -->
 <div th:replace="shared/fragments/footer :: footer"></div>
 
+<!-- SweetAlert Feedback -->
 <div th:if="${mensagem}" th:with="msg=${mensagem}, tipo=${tipoMensagem}">
     <script th:inline="javascript">
         /*<![CDATA[*/
