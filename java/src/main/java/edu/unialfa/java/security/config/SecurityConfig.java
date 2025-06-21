@@ -29,7 +29,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    AuthenticationSuccessHandler successHandler,
-                                                   VerificaAlteracaoSenhaFilter senhaFilter) throws Exception {
+                                                   VerificaAlteracaoSenhaFilter senhaFilter,
+                                                   CustomAccessDeniedHandler accessDeniedHandler) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
                 .addFilterBefore(senhaFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
@@ -39,6 +40,9 @@ public class SecurityConfig {
                         .requestMatchers("/professor/**").hasAuthority("PROFESSOR")
                         .requestMatchers("/aluno/**").hasAuthority("ALUNO")
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(exception -> exception
+                        .accessDeniedHandler(accessDeniedHandler)
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
@@ -53,6 +57,7 @@ public class SecurityConfig {
                 .userDetailsService(usuarioDetailsService)
                 .build();
     }
+
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
