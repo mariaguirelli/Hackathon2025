@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head th:replace="shared/layout :: head"></head>
 <body class="d-flex flex-column min-vh-100">
 
@@ -9,8 +9,60 @@
     <div th:replace="shared/fragments/sidebar :: sidebar"></div>
 
     <main class="flex-grow-1 p-4" style="background-color: #f8f9fa;">
-        <h1>Bem-vindo ao sistema!</h1>
-        <p>Conteúdo da página inicial aqui.</p>
+        <div class="container">
+            <div class="jumbotron bg-white p-4 rounded shadow-sm">
+                <h1 class="display-4">Olá, <span th:text="${usuario.nome}">Usuário</span>!</h1>
+                <p class="lead">
+                    Bem-vindo ao sistema.
+                </p>
+                <hr class="my-4" />
+                <p>
+                    Seu perfil:
+                    <span class="badge" sec:authorize="hasAuthority('PROFESSOR')">
+                        <span class="bg-primary text-white">Professor</span>
+                    </span>
+                    <span class="badge" sec:authorize="hasAuthority('ALUNO')">
+                        <span class="bg-success text-white">Aluno</span>
+                    </span>
+                    <span class="badge" sec:authorize="hasAuthority('ADMIN')">
+                        <span class="bg-danger text-white">Admin</span>
+                    </span>
+                </p>
+                <p>
+                    Use o menu lateral para navegar pelas funcionalidades do sistema.
+                </p>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">Perfil</h5>
+                            <p class="card-text">Atualize suas informações pessoais e senha.</p>
+                            <a href="#" class="btn btn-secondary">Meu Perfil</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4" sec:authorize="hasAuthority('PROFESSOR')">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">Minhas Provas</h5>
+                            <p class="card-text">Visualize e gerencie suas provas rapidamente.</p>
+                            <a href="/professor/provas" class="btn btn-primary">Ir para Provas</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4" sec:authorize="hasAuthority('ADMIN')">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">Administração</h5>
+                            <p class="card-text">Gerencie usuários, configurações.</p>
+                            <a href="/admin/usuarios" class="btn btn-danger">Gerênciar Usuários</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
 </div>
 

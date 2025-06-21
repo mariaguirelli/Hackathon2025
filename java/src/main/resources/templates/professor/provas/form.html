@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="shared/layout :: head"></head>
-<body class="d-flex flex-column min-vh-100">
+<body class="d-flex flex-column min-vh-100 bg-light">
 
 <!-- Header -->
 <div th:replace="shared/fragments/header :: header"></div>
@@ -10,25 +10,30 @@
 <div class="d-flex flex-grow-1">
     <div th:replace="shared/fragments/sidebar :: sidebar" class="h-100"></div>
 
-    <main class="flex-grow-1 p-4" style="background-color: #f8f9fa;">
-        <h2 th:text="${prova.id} != null ? 'Editar Prova' : 'Nova Prova'"></h2>
+    <main class="flex-grow-1 p-4 bg-white shadow-sm rounded m-3">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0" th:text="${prova.id} != null ? 'Editar Prova' : 'Nova Prova'"></h2>
+            <a href="/professor/provas" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Voltar
+            </a>
+        </div>
 
         <form th:action="@{/professor/provas/salvar}" th:object="${prova}" method="post">
             <input type="hidden" th:field="*{id}"/>
 
             <div class="mb-3">
-                <label class="form-label">Título da Prova</label>
+                <label class="form-label fw-semibold">Título da Prova</label>
                 <input type="text" class="form-control" th:field="*{titulo}" placeholder="Digite o título" required />
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Data de Aplicação</label>
+                <label class="form-label fw-semibold">Data de Aplicação</label>
                 <input type="date" class="form-control" name="dataAplicacao"
-                       th:value="${prova.dataAplicacao != null ? #temporals.format(prova.dataAplicacao, 'yyyy-MM-dd') : ''}" />
+                       th:value="${prova.dataAplicacao != null ? #temporals.format(prova.dataAplicacao, 'yyyy-MM-dd') : ''}" required />
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Turma e Disciplina</label>
+                <label class="form-label fw-semibold">Turma e Disciplina</label>
                 <select class="form-select" th:field="*{turmaDisciplina}" required>
                     <option value="" disabled th:selected="${prova.turmaDisciplina == null}">Selecione</option>
                     <option th:each="td : ${turmaDisciplinas}"
@@ -40,7 +45,7 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Bimestre</label>
+                <label class="form-label fw-semibold">Bimestre</label>
                 <select class="form-select" th:field="*{bimestre}" required>
                     <option value="" disabled th:selected="${prova.bimestre == null}">Selecione</option>
                     <option value="1" th:selected="${prova.bimestre == 1}">1º Bimestre</option>
@@ -51,15 +56,16 @@
             </div>
 
             <div class="mb-4">
-                <h5>Questões</h5>
+                <h5 class="fw-semibold">Questões</h5>
 
                 <div id="questoes-container">
-                    <div th:if="${prova.questoes != null}" th:each="questao, iterStat : ${prova.questoes}" class="border rounded p-3 mb-3">
+                    <div th:if="${prova.questoes != null}" th:each="questao, iterStat : ${prova.questoes}" class="border rounded p-3 mb-3 bg-light">
                         <div class="mb-2">
-                            <label>Enunciado</label>
+                            <label class="form-label">Enunciado</label>
                             <textarea th:name="|questoes[${iterStat.index}].enunciado|" class="form-control" required
                                       th:text="${questao.enunciado}"></textarea>
                         </div>
+
                         <div class="row">
                             <div class="col-md-6 mb-2">
                                 <input type="text" th:name="|questoes[${iterStat.index}].alternativaA|" class="form-control" placeholder="Alternativa A" required
@@ -82,10 +88,11 @@
                                        th:value="${questao.alternativaE}"/>
                             </div>
                         </div>
+
                         <div class="mb-2">
-                            <label>Resposta Correta</label>
+                            <label class="form-label">Resposta Correta</label>
                             <select th:name="|questoes[${iterStat.index}].respostaCorreta|" class="form-select" required>
-                                <option value="" disabled>Selecione</option>
+                                <option value="">Selecione</option>
                                 <option value="A" th:selected="${questao.respostaCorreta == 'A'}">A</option>
                                 <option value="B" th:selected="${questao.respostaCorreta == 'B'}">B</option>
                                 <option value="C" th:selected="${questao.respostaCorreta == 'C'}">C</option>
@@ -93,8 +100,9 @@
                                 <option value="E" th:selected="${questao.respostaCorreta == 'E'}">E</option>
                             </select>
                         </div>
+
                         <div class="mb-2">
-                            <label>Valor da Questão</label>
+                            <label class="form-label">Valor da Questão</label>
                             <input type="number" step="0.01" th:name="|questoes[${iterStat.index}].valor|" class="form-control" required
                                    th:value="${questao.valor}"/>
                         </div>
@@ -104,19 +112,28 @@
                 <button type="button" class="btn btn-outline-primary mt-2" onclick="adicionarQuestao()">Adicionar Questão</button>
             </div>
 
-            <button type="submit" class="btn btn-success">Salvar</button>
-            <a href="/professor/provas" class="btn btn-secondary">Cancelar</a>
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-check-circle-fill"></i> Salvar
+                </button>
+                <a href="/professor/provas" class="btn btn-secondary">
+                    <i class="bi bi-x-circle-fill"></i> Cancelar
+                </a>
+            </div>
         </form>
+
+        <script th:inline="javascript">
+            let contadorQuestoes = [[${prova.questoes != null ? #lists.size(prova.questoes) : 0}]];
+        </script>
+        <script src="/js/prova-form.js"></script>
     </main>
 </div>
 
-<!-- Footer -->
-<!-- Footer -->
 <div th:replace="shared/fragments/footer :: footer"></div>
 
+<!-- Feedback SweetAlert -->
 <div th:if="${mensagem}" th:with="msg=${mensagem}, tipo=${tipoMensagem}">
     <script th:inline="javascript">
-        /*<![CDATA[*/
         let mensagem = /*[[${msg}]]*/ null;
         let tipo = /*[[${tipo}]]*/ null;
 
@@ -127,52 +144,8 @@
                 alertaErro(mensagem);
             }
         }
-        /*]]>*/
     </script>
 </div>
-
-<script th:inline="javascript">
-    let contadorQuestoes = [[${prova.questoes != null ? #lists.size(prova.questoes) : 0}]];
-
-    function adicionarQuestao() {
-        const container = document.getElementById('questoes-container');
-
-        const div = document.createElement('div');
-        div.className = 'border rounded p-3 mb-3';
-        div.innerHTML = `
-            <div class="mb-2">
-                <label>Enunciado</label>
-                <textarea name="questoes[${contadorQuestoes}].enunciado" class="form-control" required></textarea>
-            </div>
-            <div class="row">
-                <div class="col-md-6 mb-2"><input type="text" name="questoes[${contadorQuestoes}].alternativaA" class="form-control" placeholder="Alternativa A" required></div>
-                <div class="col-md-6 mb-2"><input type="text" name="questoes[${contadorQuestoes}].alternativaB" class="form-control" placeholder="Alternativa B" required></div>
-                <div class="col-md-6 mb-2"><input type="text" name="questoes[${contadorQuestoes}].alternativaC" class="form-control" placeholder="Alternativa C" required></div>
-                <div class="col-md-6 mb-2"><input type="text" name="questoes[${contadorQuestoes}].alternativaD" class="form-control" placeholder="Alternativa D" required></div>
-                <div class="col-md-6 mb-2"><input type="text" name="questoes[${contadorQuestoes}].alternativaE" class="form-control" placeholder="Alternativa E" required></div>
-            </div>
-            <div class="mb-2">
-                <label>Resposta Correta</label>
-                <select name="questoes[${contadorQuestoes}].respostaCorreta" class="form-select" required>
-                    <option value="">Selecione</option>
-                    <option value="A">A</option>
-                    <option value="B">B</option>
-                    <option value="C">C</option>
-                    <option value="D">D</option>
-                    <option value="E">E</option>
-                </select>
-            </div>
-            <div class="mb-2">
-                <label>Valor da Questão</label>
-                <input type="number" step="0.01" name="questoes[${contadorQuestoes}].valor" class="form-control" required>
-            </div>
-        `;
-
-        container.appendChild(div);
-        contadorQuestoes++;
-    }
-</script>
-
 
 </body>
 </html>

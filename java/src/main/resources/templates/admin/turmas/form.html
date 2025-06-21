@@ -1,38 +1,49 @@
 <!DOCTYPE html>
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="shared/layout :: head"></head>
-<body class="d-flex flex-column vh-100">
+<body class="d-flex flex-column min-vh-100 bg-light">
 
-<!-- Header fixo -->
+<!-- Header -->
 <div th:replace="shared/fragments/header :: header"></div>
 
 <!-- Área principal com sidebar + conteúdo -->
 <div class="d-flex flex-grow-1">
     <div th:replace="shared/fragments/sidebar :: sidebar" class="h-100"></div>
 
-    <main class="flex-grow-1 p-4" style="background-color: #f8f9fa;">
-        <h2 th:text="${turma.id} != null ? 'Editar Turma' : 'Nova Turma'"></h2>
+    <main class="flex-grow-1 p-4 bg-white shadow-sm rounded m-3">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0" th:text="${turma.id} != null ? 'Editar Turma' : 'Nova Turma'"></h2>
+            <a href="/admin/turmas" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Voltar
+            </a>
+        </div>
 
         <form th:action="@{/admin/turmas/salvar}" th:object="${turma}" method="post">
             <input type="hidden" th:field="*{id}"/>
 
             <div class="mb-3">
-                <label class="form-label">Nome</label>
+                <label class="form-label fw-semibold">Nome</label>
                 <input type="text" class="form-control" th:field="*{nome}" placeholder="Digite o nome da turma" required/>
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Ano Letivo</label>
-                <input type="number" class="form-control" th:field="*{anoLetivo}" placeholder="Ex: aaaa" required/>
+                <label class="form-label fw-semibold">Ano Letivo</label>
+                <input type="number" class="form-control" th:field="*{anoLetivo}" placeholder="Ex: 2025" required/>
             </div>
 
-            <button type="submit" class="btn btn-success">Salvar</button>
-            <a href="/admin/turmas" class="btn btn-secondary">Cancelar</a>
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-check-circle-fill"></i> Salvar
+                </button>
+                <a href="/admin/turmas" class="btn btn-secondary">
+                    <i class="bi bi-x-circle-fill"></i> Cancelar
+                </a>
+            </div>
         </form>
     </main>
 </div>
 
-<!-- Footer colado no rodapé -->
+<!-- Footer -->
 <div th:replace="shared/fragments/footer :: footer"></div>
 
 </body>

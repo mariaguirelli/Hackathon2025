@@ -1,49 +1,62 @@
 <!DOCTYPE html>
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="shared/layout :: head"></head>
-<body class="d-flex flex-column min-vh-100">
+<body class="d-flex flex-column min-vh-100 bg-light">
 
+<!-- Header -->
 <div th:replace="shared/fragments/header :: header"></div>
 
+<!-- Layout principal com sidebar + conteúdo -->
 <div class="d-flex flex-grow-1">
     <div th:replace="shared/fragments/sidebar :: sidebar" class="h-100"></div>
 
-    <main class="flex-grow-1 p-4" style="background-color: #f8f9fa;">
-        <h2 th:text="${turmaAluno.id != null} ? 'Editar Vinculação' : 'Nova Vinculação'"></h2>
+    <main class="flex-grow-1 p-4 bg-white shadow-sm rounded m-3">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0" th:text="${turmaAluno.id != null} ? 'Editar Vinculação' : 'Nova Vinculação'"></h2>
+            <a href="/admin/turma-alunos" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Voltar
+            </a>
+        </div>
 
         <form th:action="@{/admin/turma-alunos/salvar}" th:object="${turmaAluno}" method="post">
             <input type="hidden" th:if="${turmaAluno.id != null}" th:field="*{id}"/>
 
             <div class="mb-3">
-                <label class="form-label">Turma</label>
-                <select class="form-control" th:field="*{turma.id}" required>
+                <label class="form-label fw-semibold">Turma</label>
+                <select class="form-select" th:field="*{turma.id}" required>
                     <option value="" disabled selected>Selecione a turma</option>
                     <option th:each="turma : ${turmas}"
                             th:value="${turma.id}"
-                            th:text="${turma.nome + ' - ' + turma.anoLetivo}">Turma</option>
+                            th:text="${turma.nome + ' - ' + turma.anoLetivo}"></option>
                 </select>
             </div>
 
-            <!-- Aluno -->
             <div class="mb-3">
-                <label class="form-label">Aluno</label>
-                <select class="form-control" th:field="*{aluno.id}" required>
+                <label class="form-label fw-semibold">Aluno</label>
+                <select class="form-select" th:field="*{aluno.id}" required>
                     <option value="" disabled selected>Selecione o aluno</option>
                     <option th:each="aluno : ${alunos}"
                             th:value="${aluno.id}"
-                            th:text="${aluno.nome}">Aluno</option>
+                            th:text="${aluno.nome + ' ' + aluno.sobrenome}"></option>
                 </select>
             </div>
 
-            <button type="submit" class="btn btn-primary">Salvar</button>
-            <a href="/admin/turma-alunos" class="btn btn-secondary">Cancelar</a>
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-check-circle-fill"></i> Salvar
+                </button>
+                <a href="/admin/turma-alunos" class="btn btn-secondary">
+                    <i class="bi bi-x-circle-fill"></i> Cancelar
+                </a>
+            </div>
         </form>
     </main>
 </div>
 
+<!-- Footer -->
 <div th:replace="shared/fragments/footer :: footer"></div>
 
-<!-- Mensagens de alerta (SweetAlert2) -->
+<!-- SweetAlert -->
 <div th:if="${mensagem}" th:with="msg=${mensagem}, tipo=${tipoMensagem}">
     <script th:inline="javascript">
         let mensagem = /*[[${msg}]]*/ null;

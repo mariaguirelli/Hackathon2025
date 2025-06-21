@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{shared/layout :: head}"></head>
-<body class="d-flex flex-column vh-100">
+<body class="d-flex flex-column vh-100 bg-light">
 
 <!-- Header fixo -->
 <div th:replace="shared/fragments/header :: header"></div>
@@ -10,34 +10,39 @@
 <div class="d-flex flex-grow-1">
     <div th:replace="shared/fragments/sidebar :: sidebar" class="h-100"></div>
 
-    <main class="flex-grow-1 p-4" style="background-color: #f8f9fa;">
-        <h2 th:text="${professor.id != null} ? 'Editar Professor' : 'Novo Professor'"></h2>
+    <main class="flex-grow-1 p-4 bg-white shadow-sm rounded m-3">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h2 class="mb-0" th:text="${professor.id} != null ? 'Editar Professor' : 'Novo Professor'"></h2>
+            <a href="/admin/professores" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Voltar
+            </a>
+        </div>
 
         <form th:action="@{/admin/professores/salvar}" th:object="${professor}" method="post">
             <input type="hidden" th:field="*{id}"/>
 
             <div class="mb-3">
-                <label class="form-label">Registro (Gerado automaticamente)</label>
+                <label class="form-label fw-semibold">Registro (Gerado automaticamente)</label>
                 <input type="text" class="form-control" th:field="*{registro}" readonly/>
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Nome</label>
+                <label class="form-label fw-semibold">Nome</label>
                 <input type="text" class="form-control" th:field="*{nome}" placeholder="Digite o nome" required/>
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Sobrenome</label>
+                <label class="form-label fw-semibold">Sobrenome</label>
                 <input type="text" class="form-control" th:field="*{sobrenome}" placeholder="Digite o sobrenome" required/>
             </div>
 
             <div class="mb-3">
-                <label class="form-label">CPF</label>
+                <label class="form-label fw-semibold">CPF</label>
                 <input type="text" class="form-control validar-cpf" th:field="*{cpf}" placeholder="Digite o CPF" required maxlength="11"/>
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Data de Nascimento</label>
+                <label class="form-label fw-semibold">Data de Nascimento</label>
                 <input
                         type="date"
                         class="form-control"
@@ -45,8 +50,14 @@
                         th:value="${professor.dataNascimento != null} ? ${#temporals.format(professor.dataNascimento, 'yyyy-MM-dd')} : ''" />
             </div>
 
-            <button type="submit" class="btn btn-success">Salvar</button>
-            <a href="/admin/professores" class="btn btn-secondary">Cancelar</a>
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-check-circle-fill"></i> Salvar
+                </button>
+                <a href="/admin/professores" class="btn btn-secondary">
+                    <i class="bi bi-x-circle-fill"></i> Cancelar
+                </a>
+            </div>
         </form>
     </main>
 </div>

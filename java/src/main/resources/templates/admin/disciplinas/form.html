@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="shared/layout :: head"></head>
-<body class="d-flex flex-column vh-100">
+<body class="d-flex flex-column vh-100 bg-light">
 
 <!-- Header fixo -->
 <div th:replace="shared/fragments/header :: header"></div>
@@ -10,29 +10,40 @@
 <div class="d-flex flex-grow-1">
     <div th:replace="shared/fragments/sidebar :: sidebar" class="h-100"></div>
 
-    <main class="flex-grow-1 p-4" style="background-color: #f8f9fa;">
-        <h2 th:text="${disciplina.id} != null ? 'Editar Disciplina' : 'Nova Disciplina'"></h2>
+    <main class="flex-grow-1 p-4 bg-white shadow-sm rounded m-3">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h2 class="mb-0" th:text="${disciplina.id} != null ? 'Editar Disciplina' : 'Nova Disciplina'"></h2>
+            <a href="/admin/disciplinas" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Voltar
+            </a>
+        </div>
 
         <form th:action="@{/admin/disciplinas/salvar}" th:object="${disciplina}" method="post">
             <input type="hidden" th:field="*{id}"/>
 
             <div class="mb-3">
-                <label class="form-label">Nome</label>
+                <label class="form-label fw-semibold">Nome</label>
                 <input type="text" class="form-control" th:field="*{nome}" placeholder="Digite o nome da disciplina" required/>
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Descrição</label>
+                <label class="form-label fw-semibold">Descrição</label>
                 <textarea class="form-control" th:field="*{descricao}" placeholder="Descreva a disciplina" rows="4" required></textarea>
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Carga Horária (em horas)</label>
+                <label class="form-label fw-semibold">Carga Horária (em horas)</label>
                 <input type="number" class="form-control" th:field="*{cargaHoraria}" placeholder="Ex: 60" min="1" required/>
             </div>
 
-            <button type="submit" class="btn btn-success">Salvar</button>
-            <a href="/admin/disciplinas" class="btn btn-secondary">Cancelar</a>
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-check-circle-fill"></i> Salvar
+                </button>
+                <a href="/admin/disciplinas" class="btn btn-secondary">
+                    <i class="bi bi-x-circle-fill"></i> Cancelar
+                </a>
+            </div>
         </form>
     </main>
 </div>
