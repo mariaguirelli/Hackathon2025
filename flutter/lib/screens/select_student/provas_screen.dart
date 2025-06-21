@@ -12,6 +12,8 @@ class ProvasScreen extends StatefulWidget {
 
 class _ProvasScreenState extends State<ProvasScreen> {
   List<Map<String, dynamic>> provas = [];
+  bool carregando = true;
+  bool erro = false;
 
   @override
   void initState() {
@@ -20,37 +22,56 @@ class _ProvasScreenState extends State<ProvasScreen> {
   }
 
   Future<void> carregarProvas() async {
-    final resultado = await ApiService.getProvas(widget.turmaId);
-    setState(() {
-      provas = resultado;
-    });
+    try {
+      final resultado = await ApiService.getProvas(widget.turmaId);
+      setState(() {
+        provas = resultado;
+        carregando = false;
+      });
+    } catch (e) {
+      setState(() {
+        erro = true;
+        carregando = false;
+      });
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Erro ao carregar provas: $e')));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Provas')),
-      body: ListView.builder(
-        itemCount: provas.length,
-        itemBuilder: (context, index) {
-          final prova = provas[index];
-          return ListTile(
-            title: Text(prova['titulo']),
-            trailing: const Icon(Icons.arrow_forward_ios),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => AlunosScreen(
-                    turmaId: widget.turmaId,
-                    provaId: prova['id'],
-                  ),
-                ),
-              );
-            },
-          );
-        },
-      ),
+
+      body: carregando
+          ? const Center(child: CircularProgressIndicator())
+          : erro
+          ? const Center(child: Text('Erro ao carregar as provas.'))
+          : provas.isEmpty
+          ? const Center(child: Text('Nenhuma prova encontrada.'))
+          : ListView.builder(
+              itemCount: provas.length,
+              itemBuilder: (context, index) {
+                final prova = provas[index];
+                return ListTile(
+                  title: Text(prova['titulo']),
+                  trailing: const Icon(Icons.arrow_forward_ios),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => AlunosScreen(
+                          turmaId: widget.turmaId,
+                          provaId: prova['id'],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
     );
   }
 }

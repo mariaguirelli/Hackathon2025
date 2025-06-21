@@ -16,8 +16,6 @@ class MyApp extends StatelessWidget {
     final prefs = await SharedPreferences.getInstance();
     final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
 
-    // Aqui você pode também validar perfil do usuário, se quiser
-
     if (isLoggedIn) {
       return const TurmasScreen();
     } else {
@@ -38,11 +36,9 @@ class MyApp extends StatelessWidget {
             if (snapshot.hasData) {
               return snapshot.data!;
             } else {
-              // Se algo der errado, volta para LoginScreen
               return const LoginScreen();
             }
           }
-          // Enquanto carrega o SharedPreferences, mostra loading
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );

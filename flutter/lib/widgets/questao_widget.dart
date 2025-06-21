@@ -22,8 +22,10 @@ class QuestaoWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(questao.enunciado,
-                style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text(
+              questao.enunciado,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
             ...['a', 'b', 'c', 'd', 'e'].map((letra) {
               final texto = questao.toJson()[letra] ?? '';
               return RadioListTile<String>(
@@ -34,7 +36,7 @@ class QuestaoWidget extends StatelessWidget {
                   onChanged(valor!);
                 },
               );
-            }).toList(),
+            }),
           ],
         ),
       ),

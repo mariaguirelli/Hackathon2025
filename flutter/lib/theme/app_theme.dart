@@ -19,9 +19,7 @@ class AppTheme {
           backgroundColor: primaryColor,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
       ),
@@ -34,8 +32,8 @@ class AppTheme {
         labelStyle: TextStyle(color: primaryColor),
       ),
       textTheme: const TextTheme(
-        headline6: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-        bodyText2: TextStyle(fontSize: 16),
+        titleLarge: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+        bodyMedium: TextStyle(fontSize: 16),
       ),
       scaffoldBackgroundColor: Colors.grey[50],
     );

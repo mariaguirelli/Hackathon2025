@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:correcao_gabaritos/models/usuario.dart';
+import 'package:correcao_gabaritos/services/api_service.dart';
+import 'package:correcao_gabaritos/screens/home/turmas_screen.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -13,20 +17,27 @@ class _LoginScreenState extends State<LoginScreen> {
   final _senhaController = TextEditingController();
 
   Future<void> _login() async {
-    String email = _emailController.text;
-    String senha = _senhaController.text;
+    String email = _emailController.text.trim();
+    String senha = _senhaController.text.trim();
 
-    if (email == 'admin@teste.com' && senha == '123456') {
+    final Usuario? usuario = await ApiService.login(email, senha);
+
+    if (usuario != null && usuario.perfil == 'PROFESSOR') {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('isLoggedIn', true);
-      await prefs.setString('userEmail', email);
+      await prefs.setString('professor_id', usuario.id.toString());
+      await prefs.setString('nome', usuario.nome);
+      await prefs.setString('userEmail', usuario.email);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Login bem-sucedido')),
+      if (!mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const TurmasScreen()),
       );
     } else {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Login inválido')),
+        const SnackBar(content: Text('Apenas professores podem acessar')),
       );
     }
   }
@@ -49,33 +60,10 @@ class _LoginScreenState extends State<LoginScreen> {
               decoration: const InputDecoration(labelText: 'Senha'),
             ),
             const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _login,
-              child: const Text('Entrar'),
-            ),
+            ElevatedButton(onPressed: _login, child: const Text('Entrar')),
           ],
         ),
       ),
     );
   }
 }
-
-Future<void> _login() async {
-  final response = await ApiService.login(email, senha);
-
-  if (response != null && response['perfil'] == 'PROFESSOR') {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('professor_id', response['id'].toString());
-    await prefs.setString('nome', response['nome']);
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => TurmasScreen()),
-    );
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Apenas professores podem acessar')),
-    );
-  }
-}
-

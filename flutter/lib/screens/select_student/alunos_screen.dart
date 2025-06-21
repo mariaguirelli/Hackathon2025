@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/api_service.dart';
-import '../responder_prova/responder_screen.dart';
+import '../../models/aluno.dart';
 
 class AlunosScreen extends StatefulWidget {
   final int turmaId;
@@ -13,7 +13,9 @@ class AlunosScreen extends StatefulWidget {
 }
 
 class _AlunosScreenState extends State<AlunosScreen> {
-  List<Map<String, dynamic>> alunos = [];
+  List<Aluno> alunos = [];
+  bool carregando = true;
+  bool erro = false;
 
   @override
   void initState() {
@@ -22,29 +24,50 @@ class _AlunosScreenState extends State<AlunosScreen> {
   }
 
   Future<void> carregarAlunos() async {
-    final resultado = await ApiService.getAlunos(widget.turmaId);
-    setState(() {
-      alunos = resultado;
-    });
+    try {
+      final resultado = await ApiService.getAlunos(widget.turmaId);
+      if (!mounted) return;
+      setState(() {
+        alunos = resultado;
+        carregando = false;
+        erro = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        erro = true;
+        carregando = false;
+      });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Erro ao carregar alunos: $e')));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Alunos')),
-      body: ListView.builder(
+    Widget body;
+
+    if (carregando) {
+      body = const Center(child: CircularProgressIndicator());
+    } else if (erro) {
+      body = const Center(child: Text('Erro ao carregar os alunos.'));
+    } else if (alunos.isEmpty) {
+      body = const Center(child: Text('Nenhum aluno encontrado.'));
+    } else {
+      body = ListView.builder(
         itemCount: alunos.length,
         itemBuilder: (context, index) {
           final aluno = alunos[index];
           return ListTile(
-            title: Text(aluno['nome']),
+            title: Text(aluno.nome),
             trailing: const Icon(Icons.edit_note),
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (_) => ResponderScreen(
-                    alunoId: aluno['id'],
+                    alunoId: aluno.id,
                     provaId: widget.provaId,
                   ),
                 ),
@@ -52,7 +75,12 @@ class _AlunosScreenState extends State<AlunosScreen> {
             },
           );
         },
-      ),
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Alunos')),
+      body: body,
     );
   }
 }

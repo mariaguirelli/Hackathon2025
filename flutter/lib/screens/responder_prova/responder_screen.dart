@@ -1,95 +1,69 @@
 import 'package:flutter/material.dart';
-import '../../services/api_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class ResponderScreen extends StatefulWidget {
-  final int alunoId;
-  final int provaId;
+import 'package:correcao_gabaritos/models/usuario.dart';
+import 'package:correcao_gabaritos/services/api_service.dart';
+import 'package:correcao_gabaritos/screens/home/turmas_screen.dart';
 
-  const ResponderScreen({
-    super.key,
-    required this.alunoId,
-    required this.provaId,
-  });
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<ResponderScreen> createState() => _ResponderScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _ResponderScreenState extends State<ResponderScreen> {
-  List<Map<String, dynamic>> questoes = [];
-  final Map<int, String> respostasSelecionadas = {};
+class _LoginScreenState extends State<LoginScreen> {
+  final _emailController = TextEditingController();
+  final _senhaController = TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
-    carregarQuestoes();
-  }
+  Future<void> _login() async {
+    String email = _emailController.text.trim();
+    String senha = _senhaController.text.trim();
 
-  Future<void> carregarQuestoes() async {
-    final resultado = await ApiService.getQuestoes(widget.provaId);
-    setState(() {
-      questoes = resultado;
-    });
-  }
+    final Usuario? usuario = await ApiService.login(email, senha);
 
-  Future<void> enviarRespostas() async {
-    await ApiService.enviarRespostas(
-      alunoId: widget.alunoId,
-      provaId: widget.provaId,
-      respostas: respostasSelecionadas,
-    );
+    if (usuario != null && usuario.perfil == 'PROFESSOR') {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('isLoggedIn', true);
+      await prefs.setString('professor_id', usuario.id.toString());
+      await prefs.setString('nome', usuario.nome);
+      await prefs.setString('userEmail', usuario.email);
 
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Respostas enviadas com sucesso!')),
-    );
-    Navigator.pop(context);
+      if (!mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const TurmasScreen()),
+      );
+    } else {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Apenas professores podem acessar')),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Responder Prova')),
-      body: questoes.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : ListView(
-              children: [
-                ...questoes.map((q) {
-                  int id = q['id'];
-                  return Card(
-                    margin: const EdgeInsets.all(12),
-                    child: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(q['enunciado'], style: const TextStyle(fontWeight: FontWeight.bold)),
-                          ...['a', 'b', 'c', 'd', 'e'].map((letra) {
-                            return RadioListTile<String>(
-                              title: Text(q[letra]),
-                              value: letra.toUpperCase(),
-                              groupValue: respostasSelecionadas[id],
-                              onChanged: (valor) {
-                                setState(() {
-                                  respostasSelecionadas[id] = valor!;
-                                });
-                              },
-                            );
-                          }).toList(),
-                        ],
-                      ),
-                    ),
-                  );
-                }),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: ElevatedButton(
-                    onPressed: enviarRespostas,
-                    child: const Text('Enviar Respostas'),
-                  ),
-                )
-              ],
+      appBar: AppBar(title: const Text('Login')),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            TextField(
+              controller: _emailController,
+              decoration: const InputDecoration(labelText: 'Email'),
             ),
+            TextField(
+              controller: _senhaController,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: 'Senha'),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(onPressed: _login, child: const Text('Entrar')),
+          ],
+        ),
+      ),
     );
   }
 }
