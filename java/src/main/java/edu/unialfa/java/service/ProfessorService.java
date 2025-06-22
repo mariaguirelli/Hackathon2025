@@ -1,7 +1,6 @@
 package edu.unialfa.java.service;
 
 import edu.unialfa.java.exception.CpfDuplicadoException;
-import edu.unialfa.java.model.Aluno;
 import edu.unialfa.java.model.Professor;
 import edu.unialfa.java.repository.ProfessorRepository;
 import edu.unialfa.java.repository.TurmaDisciplinaRepository;

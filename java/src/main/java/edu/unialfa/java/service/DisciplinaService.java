@@ -1,5 +1,6 @@
 package edu.unialfa.java.service;
 
+import edu.unialfa.java.model.Aluno;
 import edu.unialfa.java.model.Disciplina;
 import edu.unialfa.java.repository.DisciplinaRepository;
 import edu.unialfa.java.repository.TurmaDisciplinaRepository;
@@ -44,6 +45,10 @@ public class DisciplinaService {
         }
 
         disciplinaRepository.deleteById(id);
+    }
+  
+    public List<Disciplina> listarDisciplinasPorAluno(Long alunoId) {
+        return disciplinaRepository.findByAlunoId(alunoId);
     }
 
 }
