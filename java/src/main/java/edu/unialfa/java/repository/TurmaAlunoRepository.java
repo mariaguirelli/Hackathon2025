@@ -1,5 +1,6 @@
 package edu.unialfa.java.repository;
 
+import edu.unialfa.java.model.Turma;
 import org.springframework.data.jpa.repository.JpaRepository;
 import edu.unialfa.java.model.TurmaAluno;
 import org.springframework.data.jpa.repository.Query;
@@ -10,6 +11,7 @@ import java.util.Optional;
 
 public interface TurmaAlunoRepository extends JpaRepository<TurmaAluno, Long> {
     List<TurmaAluno> findByAlunoId(Long alunoId);
+
     List<TurmaAluno> findByTurmaId(Long turmaId);
 
     boolean existsByAlunoId(Long alunoId);
@@ -18,4 +20,8 @@ public interface TurmaAlunoRepository extends JpaRepository<TurmaAluno, Long> {
 
     @Query("SELECT ta FROM TurmaAluno ta WHERE ta.turma.id = :turmaId AND ta.aluno.id = :alunoId")
     Optional<TurmaAluno> findByTurmaIdAndAlunoId(@Param("turmaId") Long turmaId, @Param("alunoId") Long alunoId);
+
+    @Query("SELECT ta.turma FROM TurmaAluno ta WHERE ta.aluno.id = :alunoId")
+    List<Turma> findTurmasByAlunoId(Long alunoId);
+
 }

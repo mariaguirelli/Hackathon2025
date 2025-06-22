@@ -1,46 +1,82 @@
 <!DOCTYPE html>
-<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head th:replace="shared/layout :: head"></head>
-<body class="d-flex flex-column min-vh-100 bg-light">
+<body class="d-flex flex-column min-vh-100">
 
-<!-- Header -->
 <div th:replace="shared/fragments/header :: header"></div>
 
-<!-- Sidebar + Conteúdo -->
 <div class="d-flex flex-grow-1">
-    <div th:replace="shared/fragments/sidebar :: sidebar" class="h-100"></div>
+    <div th:replace="shared/fragments/sidebar :: sidebar"></div>
 
-    <main class="flex-grow-1 p-4 bg-white shadow-sm rounded m-3">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="mb-0">Minhas Notas</h2>
-        </div>
+    <main class="flex-grow-1 p-4" style="background-color: #f8f9fa;">
+        <div class="container">
 
-        <div class="table-responsive">
-            <table class="table table-hover table-bordered align-middle">
-                <thead class="table-primary text-center">
-                <tr>
-                    <th>Disciplina</th>
-                    <th>Bimestre</th>
-                    <th>Nota</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="nota : ${notas}">
-                    <td th:text="${nota.prova.turmaDisciplina.disciplina.nome}"></td>
-                    <td th:text="${nota.bimestre + 'º Bimestre'}"></td>
-                    <td th:text="${nota.nota != null ? #numbers.formatDecimal(nota.nota, 1, 'COMMA', 2, 'POINT') : '-'}"></td>
-                </tr>
-                </tbody>
-            </table>
+            <h2 class="mb-4">Consultar Notas</h2>
+
+            <form method="get" th:action="@{/aluno/notas/listar}" class="row g-3 mb-5">
+                <!-- Select de Turmas -->
+                <div class="col-md-4">
+                    <label for="turma" class="form-label">Turma</label>
+                    <select id="turma" name="turmaId" class="form-select" required>
+                        <option value="" disabled selected>Selecione uma turma</option>
+                        <option th:each="turma : ${turmas}"
+                                th:value="${turma.id}"
+                                th:text="${turma.nome}">Turma</option>
+                    </select>
+                </div>
+
+                <!-- Select de Bimestre -->
+                <div class="col-md-4">
+                    <label for="bimestre" class="form-label">Bimestre</label>
+                    <select id="bimestre" name="bimestre" class="form-select" required>
+                        <option value="" disabled selected>Selecione um bimestre</option>
+                        <option th:each="b : ${bimestres}"
+                                th:value="${b}"
+                                th:text="'Bimestre ' + ${b}">Bimestre</option>
+                    </select>
+                </div>
+
+                <!-- Botão -->
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Buscar Notas</button>
+                </div>
+            </form>
+
+            <!-- Tabela de Notas -->
+            <div th:if="${notas != null}">
+                <h4 class="mb-3">Resultado das Notas</h4>
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Disciplina</th>
+                        <th>Bimestre</th>
+                        <th>Nota</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="nota : ${notas}">
+                        <td th:text="${nota.disciplina}">Disciplina</td>
+                        <td th:text="${nota.bimestre}">Bimestre</td>
+                        <td th:text="${nota.nota}">Nota</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Mensagem quando não há notas -->
+            <div th:if="${notas != null and #lists.isEmpty(notas)}" class="alert alert-warning">
+                Nenhuma nota encontrada para os filtros selecionados.
+            </div>
+
         </div>
     </main>
 </div>
 
 <div th:replace="shared/fragments/footer :: footer"></div>
 
-<!-- Feedback SweetAlert -->
 <div th:if="${mensagem}" th:with="msg=${mensagem}, tipo=${tipoMensagem}">
     <script th:inline="javascript">
+        /*<![CDATA[*/
         let mensagem = /*[[${msg}]]*/ null;
         let tipo = /*[[${tipo}]]*/ null;
 
@@ -51,6 +87,7 @@
                 alertaErro(mensagem);
             }
         }
+        /*]]>*/
     </script>
 </div>
 
