@@ -21,7 +21,4 @@ public class Disciplina {
 
     private int cargaHoraria;
 
-    @ManyToOne
-    @JoinColumn(name = "aluno_id")
-    private Aluno aluno;
 }

@@ -1,5 +1,6 @@
 package edu.unialfa.java.service;
 
+import edu.unialfa.java.dto.NotaPorDisciplinaDTO;
 import edu.unialfa.java.model.Aluno;
 import edu.unialfa.java.model.Nota;
 import edu.unialfa.java.repository.NotaRepository;
@@ -12,21 +13,11 @@ import java.util.List;
 @Service
 public class NotaService {
 
-    @Autowired
 
+    @Autowired
     private NotaRepository notaRepository;
 
-    public List<Nota> listarTodos() {
-        return notaRepository.findAll();
+    public List<NotaPorDisciplinaDTO> listarNotas(Long alunoId, Long turmaId, Integer bimestre) {
+        return notaRepository.buscarNotasPorTurmaEBimestre(alunoId, turmaId, bimestre);
     }
-
-    public Nota buscarPorId(Long id) {
-        return notaRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Nota não encontrada com o ID: " + id));
-    }
-
-    public List<Nota> listarNotasPorAluno(Long alunoId) {
-        return notaRepository.findByAlunoId(alunoId);
-    }
-
 }

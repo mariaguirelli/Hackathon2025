@@ -54,4 +54,7 @@ public class TurmaService {
         turmaRepository.deleteById(id);
     }
 
+    public List<Turma> listarTurmasPorAluno(Long alunoId) {
+        return turmaRepository.findTurmasByAlunoId(alunoId);
+    }
 }

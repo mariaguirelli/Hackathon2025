@@ -89,10 +89,10 @@
 
         <!-- ALUNO -->
         <li sec:authorize="hasAuthority('ALUNO')" class="nav-item">
-            <a href="/aluno/provas"
+            <a href="/aluno/notas"
                class="nav-link text-white d-flex align-items-center gap-2"
-               th:classappend="${requestURI.startsWith('/aluno/provas')} ? ' active bg-dark text-white' : ''">
-                <i class="bi bi-journal-bookmark-fill"></i> Minhas Provas
+               th:classappend="${requestURI.startsWith('/aluno/notas')} ? ' active bg-dark text-white' : ''">
+                <i class="bi bi-journal-bookmark-fill"></i> Minhas Notas
             </a>
         </li>
 

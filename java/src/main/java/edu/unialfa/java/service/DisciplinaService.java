@@ -48,7 +48,7 @@ public class DisciplinaService {
     }
   
     public List<Disciplina> listarDisciplinasPorAluno(Long alunoId) {
-        return disciplinaRepository.findByAlunoId(alunoId);
+        return disciplinaRepository.findDisciplinasByAlunoId(alunoId);
     }
 
 }
