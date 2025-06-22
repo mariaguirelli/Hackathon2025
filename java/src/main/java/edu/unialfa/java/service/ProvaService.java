@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProvaService {
@@ -36,9 +37,20 @@ public class ProvaService {
         return provaRepository.findByTurmaDisciplina_Professor(professor);
     }
 
-
-
     public Prova salvar(Prova prova) {
+
+        List<Questao> questoesValidas = prova.getQuestoes().stream()
+                .filter(q -> q != null
+                        && q.getValor() != null
+                        && q.getValor() > 0
+                        && q.getEnunciado() != null
+                        && !q.getEnunciado().trim().isEmpty())
+                .collect(Collectors.toList());
+
+        prova.setQuestoes(questoesValidas);
+
+
+
         TurmaDisciplina td = prova.getTurmaDisciplina();
         Integer bimestre = prova.getBimestre();
 

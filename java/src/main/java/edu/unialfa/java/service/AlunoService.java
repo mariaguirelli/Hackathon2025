@@ -2,6 +2,7 @@ package edu.unialfa.java.service;
 
 import edu.unialfa.java.model.Aluno;
 import edu.unialfa.java.repository.AlunoRepository;
+import edu.unialfa.java.repository.TurmaAlunoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,10 @@ public class AlunoService {
 
     @Autowired
     private AlunoRepository alunoRepository;
+
+    @Autowired
+    private TurmaAlunoRepository turmaAlunoRepository;
+
 
     public List<Aluno> listarTodos() {
         return alunoRepository.findAll();
@@ -46,8 +51,16 @@ public class AlunoService {
         if (!alunoRepository.existsById(id)) {
             throw new EntityNotFoundException("Aluno não encontrado com o ID: " + id);
         }
+
+        boolean alunoVinculadoEmTurma = turmaAlunoRepository.existsByAlunoId(id);
+
+        if (alunoVinculadoEmTurma) {
+            throw new IllegalStateException("Não é possível excluir o aluno. Existe(m) turma(s) vinculada(s) a ele.");
+        }
+
         alunoRepository.deleteById(id);
     }
+
 
     private String gerarRaUnico() {
         Random random = new Random();

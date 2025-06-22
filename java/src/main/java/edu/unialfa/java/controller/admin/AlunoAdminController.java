@@ -8,6 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import jakarta.persistence.EntityNotFoundException;
+
 
 @Controller
 @RequestMapping("/admin/alunos")
@@ -67,11 +69,18 @@ public class AlunoAdminController {
             alunoService.excluir(id);
             redirectAttributes.addFlashAttribute("mensagem", "Aluno excluído com sucesso!");
             redirectAttributes.addFlashAttribute("tipoMensagem", "sucesso");
+        } catch (EntityNotFoundException e) {
+            redirectAttributes.addFlashAttribute("mensagem", "Erro: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("tipoMensagem", "erro");
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("mensagem", "Não foi possível excluir: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("tipoMensagem", "erro");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("mensagem", "Erro ao excluir aluno: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("mensagem", "Erro inesperado: " + e.getMessage());
             redirectAttributes.addFlashAttribute("tipoMensagem", "erro");
         }
         return "redirect:/admin/alunos";
     }
+
 
 }

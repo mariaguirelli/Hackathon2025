@@ -4,6 +4,7 @@ import edu.unialfa.java.exception.CpfDuplicadoException;
 import edu.unialfa.java.model.Aluno;
 import edu.unialfa.java.model.Professor;
 import edu.unialfa.java.repository.ProfessorRepository;
+import edu.unialfa.java.repository.TurmaDisciplinaRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,10 @@ public class ProfessorService {
 
     @Autowired
     private ProfessorRepository professorRepository;
+
+    @Autowired
+    private TurmaDisciplinaRepository turmaDisciplinaRepository;
+
 
     public List<Professor> listarTodos() {
         return professorRepository.findAll();
@@ -47,8 +52,16 @@ public class ProfessorService {
         if (!professorRepository.existsById(id)) {
             throw new EntityNotFoundException("Professor não encontrado com o ID: " + id);
         }
+
+        boolean professorVinculadoEmTurmaDisciplina = turmaDisciplinaRepository.existsByProfessorId(id);
+
+        if (professorVinculadoEmTurmaDisciplina) {
+            throw new IllegalStateException("Não é possível excluir o professor. Ele está vinculado a uma ou mais disciplinas em turmas.");
+        }
+
         professorRepository.deleteById(id);
     }
+
 
     private String gerarRegistroUnico() {
         Random random = new Random();
