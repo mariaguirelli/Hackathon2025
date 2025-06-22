@@ -12,6 +12,10 @@ public interface TurmaAlunoRepository extends JpaRepository<TurmaAluno, Long> {
     List<TurmaAluno> findByAlunoId(Long alunoId);
     List<TurmaAluno> findByTurmaId(Long turmaId);
 
+    boolean existsByAlunoId(Long alunoId);
+
+    boolean existsByTurmaId(Long turmaId);
+
     @Query("SELECT ta FROM TurmaAluno ta WHERE ta.turma.id = :turmaId AND ta.aluno.id = :alunoId")
     Optional<TurmaAluno> findByTurmaIdAndAlunoId(@Param("turmaId") Long turmaId, @Param("alunoId") Long alunoId);
 }
