@@ -1,5 +1,6 @@
 package edu.unialfa.java.service;
 
+import edu.unialfa.java.model.Aluno;
 import edu.unialfa.java.model.Disciplina;
 import edu.unialfa.java.repository.DisciplinaRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,5 +29,9 @@ public class DisciplinaService {
 
     public void excluir(Long id) {
         disciplinaRepository.deleteById(id);
+    }
+
+    public List<Disciplina> listarDisciplinasPorAluno(Long alunoId) {
+        return disciplinaRepository.findByAlunoId(alunoId);
     }
 }

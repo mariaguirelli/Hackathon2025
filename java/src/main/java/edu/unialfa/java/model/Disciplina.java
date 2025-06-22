@@ -20,4 +20,8 @@ public class Disciplina {
     private String descricao;
 
     private int cargaHoraria;
+
+    @ManyToOne
+    @JoinColumn(name = "aluno_id")
+    private Aluno aluno;
 }
