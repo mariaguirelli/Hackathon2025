@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="shared/layout :: head"></head>
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+<!-- Header -->
+<div th:replace="shared/fragments/header :: header"></div>
+
+<!-- Layout principal com sidebar + conteúdo -->
+<div class="d-flex flex-grow-1">
+    <div th:replace="shared/fragments/sidebar :: sidebar" class="h-100"></div>
+
+    <main class="flex-grow-1 p-4 bg-white shadow-sm rounded m-3">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">Estatísticas da Prova</h2>
+            <a th:href="@{/professor/provas}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left-circle-fill"></i> Voltar
+            </a>
+        </div>
+
+        <!-- Formulário de filtros -->
+        <form method="get" th:action="@{/professor/provas/estatisticas}" class="mb-4">
+
+            <div class="mb-3">
+                <label for="turmaDisciplinaId" class="form-label">Turma / Disciplina</label>
+                <select id="turmaDisciplinaId" name="turmaDisciplinaId" class="form-select" onchange="this.form.submit()">
+                    <option value="" disabled th:selected="${param.turmaDisciplinaId == null}">Selecione uma Turma/Disciplina</option>
+                    <option th:each="td : ${turmaDisciplinas}"
+                            th:value="${td.id}"
+                            th:text="${td.turma.nome} + ' / ' + ${td.disciplina.nome}"
+                            th:selected="${param.turmaDisciplinaId} == ${td.id}"></option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="bimestre" class="form-label">Bimestre</label>
+                <select id="bimestre" name="bimestre" class="form-select" onchange="this.form.submit()">
+                    <option value="" disabled th:selected="${param.bimestre == null}">Selecione um Bimestre</option>
+                    <option th:each="b : ${#numbers.sequence(1,4)}"
+                            th:value="${b}"
+                            th:text="${b}"
+                            th:selected="${param.bimestre != null and T(java.lang.Integer).parseInt(param.bimestre[0]) == b}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="mb-3" th:if="${provas != null}">
+                <label for="provaId" class="form-label">Prova</label>
+                <select id="provaId" name="provaId" class="form-select">
+                    <option value="" disabled th:selected="${param.provaId == null}">Selecione uma Prova</option>
+                    <option th:each="p : ${provas}"
+                            th:value="${p.id}"
+                            th:text="${p.titulo}"
+                            th:selected="${param.provaId} == ${p.id}"></option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary"
+                    th:if="${param.turmaDisciplinaId != null and param.bimestre != null}">
+                Ver Estatísticas
+            </button>
+        </form>
+
+        <!-- Dados da prova e estatísticas -->
+        <div th:if="${prova != null}">
+            <div class="mb-4">
+                <h4 th:text="${prova.titulo}"></h4>
+                <p><strong>Turma:</strong> <span th:text="${prova.turmaDisciplina.turma.nome}"></span></p>
+                <p><strong>Disciplina:</strong> <span th:text="${prova.turmaDisciplina.disciplina.nome}"></span></p>
+                <p><strong>Bimestre:</strong> <span th:text="${prova.bimestre}"></span></p>
+                <p><strong>Data da Aplicação:</strong> <span th:text="${#temporals.format(prova.dataAplicacao, 'dd/MM/yyyy')}"></span></p>
+            </div>
+
+            <div class="mb-4" th:if="${estatisticas != null}">
+                <h5>Métricas da Turma</h5>
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <div class="card text-white bg-primary h-100">
+                            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                                <i class="bi bi-calculator fs-1 mb-2"></i>
+                                <h6 class="card-title">Média da turma</h6>
+                                <p class="card-text fs-4 fw-bold" th:text="${estatisticas.media}"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-success h-100">
+                            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                                <i class="bi bi-arrow-up-circle fs-1 mb-2"></i>
+                                <h6 class="card-title">Maior nota</h6>
+                                <p class="card-text fs-4 fw-bold" th:text="${estatisticas.notaMaxima}"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-danger h-100">
+                            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                                <i class="bi bi-arrow-down-circle fs-1 mb-2"></i>
+                                <h6 class="card-title">Menor nota</h6>
+                                <p class="card-text fs-4 fw-bold" th:text="${estatisticas.notaMinima}"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-secondary h-100">
+                            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                                <i class="bi bi-people fs-1 mb-2"></i>
+                                <h6 class="card-title">Total de alunos</h6>
+                                <p class="card-text fs-4 fw-bold" th:text="${estatisticas.totalAlunos}"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<!-- Footer -->
+<div th:replace="shared/fragments/footer :: footer"></div>
+
+</body>
+</html>

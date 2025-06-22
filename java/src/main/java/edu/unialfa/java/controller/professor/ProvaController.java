@@ -1,10 +1,14 @@
 package edu.unialfa.java.controller.professor;
 
+import edu.unialfa.java.dto.EstatisticaProvaDTO;
 import edu.unialfa.java.model.Prova;
 import edu.unialfa.java.model.Questao;
+import edu.unialfa.java.dto.ProvaDTO;
 import edu.unialfa.java.model.TurmaDisciplina;
+import edu.unialfa.java.repository.ProvaRepository;
 import edu.unialfa.java.service.ProvaService;
 import edu.unialfa.java.service.TurmaDisciplinaService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import jakarta.validation.Valid;
 import org.springframework.ui.Model;
@@ -21,6 +25,8 @@ public class ProvaController {
 
     private final ProvaService provaService;
     private final TurmaDisciplinaService turmaDisciplinaService;
+    @Autowired
+    private ProvaRepository provaRepository;
 
     public ProvaController(ProvaService provaService, TurmaDisciplinaService turmaDisciplinaService) {
         this.provaService = provaService;
@@ -63,6 +69,40 @@ public class ProvaController {
         }
     }
 
+    @GetMapping("/estatisticas")
+    public String exibirEstatisticas(
+            @RequestParam(required = false) Long turmaDisciplinaId,
+            @RequestParam(required = false) Integer bimestre,
+            @RequestParam(required = false) Long provaId,
+            Model model) {
+
+        model.addAttribute("turmaDisciplinas", turmaDisciplinaService.listarPorProfessorLogado());
+
+        if (turmaDisciplinaId != null) {
+            turmaDisciplinaService.buscarPorId(turmaDisciplinaId).ifPresent(td ->
+                    model.addAttribute("turmaDisciplinaSelecionada", td)
+            );
+        }
+
+        if (turmaDisciplinaId != null && bimestre != null) {
+            List<ProvaDTO> provas = provaService.buscarProvasPorTurmaDisciplinaEBimestre(turmaDisciplinaId, bimestre);
+            model.addAttribute("provas", provas);
+        }
+
+        if (provaId != null) {
+            Prova prova = provaService.buscarPorId(provaId);
+            EstatisticaProvaDTO estatisticas = provaService.calcularEstatisticas(provaId);
+            model.addAttribute("prova", prova);
+            model.addAttribute("estatisticas", estatisticas);
+        }
+
+        // Para manter os filtros preenchidos
+        model.addAttribute("bimestreSelecionado", bimestre);
+        model.addAttribute("provaSelecionada", provaId);
+
+        return "professor/provas/estatisticas";
+    }
+
 
     @GetMapping("/editar/{id}")
     public String editarProva(@PathVariable Long id, Model model) {
@@ -92,4 +132,14 @@ public class ProvaController {
         return "redirect:/professor/provas";
     }
 
+    @GetMapping("/provas-por-filtro")
+    public List<ProvaDTO> getProvasPorFiltro(
+            @RequestParam Long turmaDisciplinaId,
+            @RequestParam Integer bimestre) {
+
+        List<Prova> provas = provaRepository.findByTurmaDisciplinaIdAndBimestre(turmaDisciplinaId, bimestre);
+
+        // Converter para DTO para evitar problemas de lazy loading e JSON infinito
+        return provas.stream().map(prova -> new ProvaDTO(prova.getId(), prova.getTitulo())).toList();
+    }
 }
