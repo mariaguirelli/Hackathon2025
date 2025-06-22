@@ -31,6 +31,6 @@ public class NotaController {
 
         model.addAttribute("notas", notas);
         model.addAttribute("disciplinas", disciplinas);
-        return "aluno/notas/index";
+        return "aluno/notas";
     }
 }

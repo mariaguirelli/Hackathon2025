@@ -1,10 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="shared/layout :: head"></head>
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+<!-- Header -->
+<div th:replace="shared/fragments/header :: header"></div>
+
+<!-- Sidebar + Conteúdo -->
+<div class="d-flex flex-grow-1">
+    <div th:replace="shared/fragments/sidebar :: sidebar" class="h-100"></div>
+
+    <main class="flex-grow-1 p-4 bg-white shadow-sm rounded m-3">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">Minhas Notas</h2>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered align-middle">
+                <thead class="table-primary text-center">
+                <tr>
+                    <th>Disciplina</th>
+                    <th>Bimestre</th>
+                    <th>Nota</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="nota : ${notas}">
+                    <td th:text="${nota.prova.turmaDisciplina.disciplina.nome}"></td>
+                    <td th:text="${nota.bimestre + 'º Bimestre'}"></td>
+                    <td th:text="${nota.nota != null ? #numbers.formatDecimal(nota.nota, 1, 'COMMA', 2, 'POINT') : '-'}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<div th:replace="shared/fragments/footer :: footer"></div>
+
+<!-- Feedback SweetAlert -->
+<div th:if="${mensagem}" th:with="msg=${mensagem}, tipo=${tipoMensagem}">
+    <script th:inline="javascript">
+        let mensagem = /*[[${msg}]]*/ null;
+        let tipo = /*[[${tipo}]]*/ null;
+
+        if (mensagem && tipo) {
+            if (tipo === 'sucesso') {
+                alertaSucesso(mensagem);
+            } else if (tipo === 'erro') {
+                alertaErro(mensagem);
+            }
+        }
+    </script>
+</div>
 
 </body>
 </html>
