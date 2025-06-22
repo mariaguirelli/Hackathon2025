@@ -59,7 +59,14 @@
                 <h5 class="fw-semibold">Questões</h5>
 
                 <div id="questoes-container">
-                    <div th:if="${prova.questoes != null}" th:each="questao, iterStat : ${prova.questoes}" class="border rounded p-3 mb-3 bg-light">
+                    <div th:if="${prova.questoes != null}" th:each="questao, iterStat : ${prova.questoes}" class="border rounded p-3 mb-3 bg-light questao-item">
+
+                        <!-- Campo hidden para o ID -->
+                        <input type="hidden" th:if="${questao.id != null}" th:name="|questoes[${iterStat.index}].id|" th:value="${questao.id}"/>
+
+                        <!-- Botão remover -->
+                        <button type="button" class="btn btn-sm btn-danger mb-2" onclick="removerQuestao(this)">Remover</button>
+
                         <div class="mb-2">
                             <label class="form-label">Enunciado</label>
                             <textarea th:name="|questoes[${iterStat.index}].enunciado|" class="form-control" required
@@ -111,6 +118,8 @@
 
                 <button type="button" class="btn btn-outline-primary mt-2" onclick="adicionarQuestao()">Adicionar Questão</button>
             </div>
+
+            <input type="hidden" id="questoesParaExcluir" name="questoesParaExcluir" value=""/>
 
             <div class="mt-4 d-flex gap-2">
                 <button type="submit" class="btn btn-success">

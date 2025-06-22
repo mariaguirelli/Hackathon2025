@@ -66,9 +66,10 @@ public class ProfessorAdminController {
             redirectAttributes.addFlashAttribute("mensagem", "Professor excluído com sucesso!");
             redirectAttributes.addFlashAttribute("tipoMensagem", "sucesso");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("mensagem", "Erro ao excluir professor: ");
+            redirectAttributes.addFlashAttribute("mensagem", "Erro ao excluir professor: " + e.getMessage());
             redirectAttributes.addFlashAttribute("tipoMensagem", "erro");
         }
         return "redirect:/admin/professores";
     }
+
 }
