@@ -2,6 +2,7 @@ package edu.unialfa.java.repository;
 
 import edu.unialfa.java.dto.NotaPorDisciplinaDTO;
 import edu.unialfa.java.model.Nota;
+import edu.unialfa.java.model.Prova;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -9,10 +10,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface NotaRepository extends JpaRepository<Nota, Long> {
-    List<Nota> findByAlunoId(Long alunoId);
-    List<Nota> findByProvaId(Long provaId);
-    List<Nota> findByProvaIdIn(List<Long> provaIds);
-
 
     @Query("""
         SELECT new edu.unialfa.java.dto.NotaPorDisciplinaDTO(
@@ -24,4 +21,7 @@ public interface NotaRepository extends JpaRepository<Nota, Long> {
         ORDER BY p.bimestre
     """)
     List<NotaPorDisciplinaDTO> findNotasPorAlunoOrganizadasPorBimestre(@Param("alunoId") Long alunoId);
+
+    List<Nota> findByProvaId(Long provaId);
+
 }

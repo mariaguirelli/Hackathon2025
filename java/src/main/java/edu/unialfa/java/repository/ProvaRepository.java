@@ -25,5 +25,7 @@ public interface ProvaRepository extends JpaRepository<Prova, Long> {
     Optional<Prova> buscarPorIdComQuestoes(@Param("id") Long id);
 
     List<Prova> findByTurmaDisciplina_Professor(Professor professor);
-}
 
+    List<Prova> findByTurmaDisciplinaIdAndBimestre(Long turmaDisciplinaId, Integer bimestre);
+
+}

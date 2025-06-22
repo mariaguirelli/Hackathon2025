@@ -1,8 +1,12 @@
 package edu.unialfa.java.service;
 
+import edu.unialfa.java.dto.EstatisticaProvaDTO;
+import edu.unialfa.java.dto.ProvaDTO;
 import edu.unialfa.java.model.*;
+import edu.unialfa.java.repository.NotaRepository;
 import edu.unialfa.java.repository.ProvaRepository;
 import edu.unialfa.java.repository.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +20,8 @@ public class ProvaService {
 
     private final UsuarioRepository usuarioRepository;
     private final ProvaRepository provaRepository;
+    @Autowired
+    private NotaRepository notaRepository;
 
     public ProvaService(ProvaRepository provaRepository, UsuarioRepository usuarioRepository) {
         this.provaRepository = provaRepository;
@@ -107,6 +113,43 @@ public class ProvaService {
         return provaRepository.save(prova);
     }
 
+    public List<ProvaDTO> buscarProvasPorTurmaDisciplinaEBimestre(Long turmaDisciplinaId, Integer bimestre) {
+        List<Prova> provas = provaRepository.findByTurmaDisciplinaIdAndBimestre(turmaDisciplinaId, bimestre);
+        return provas.stream()
+                .map(prova -> new ProvaDTO(prova.getId(), prova.getTitulo()))
+                .toList();
+    }
+
+    public EstatisticaProvaDTO calcularEstatisticas(Long provaId) {
+        List<Nota> notas = notaRepository.findByProvaId(provaId);
+
+        if (notas.isEmpty()) {
+            return new EstatisticaProvaDTO(0.0, 0.0, 0.0, 0L, 0L);
+        }
+
+        double soma = 0.0;
+        double maior = Double.MIN_VALUE;
+        double menor = Double.MAX_VALUE;
+
+        for (Nota nota : notas) {
+            double valor = nota.getNota();
+            soma += valor;
+            if (valor > maior) maior = valor;
+            if (valor < menor) menor = valor;
+        }
+
+        double media = soma / notas.size();
+        long alunosAcimaDaMedia = notas.stream().filter(n -> n.getNota() >= media).count();
+
+        return new EstatisticaProvaDTO(
+                media,
+                maior,
+                menor,
+                (long) notas.size(),
+                alunosAcimaDaMedia
+        );
+    }
+
 
     public Prova buscarPorId(Long id) {
         return provaRepository.buscarPorIdComQuestoes(id)
@@ -116,5 +159,9 @@ public class ProvaService {
 
     public void excluir(Long id) {
         provaRepository.deleteById(id);
+    }
+
+    public List<Prova> buscarPorTurmaDisciplinaEBimestre(Long turmaDisciplinaId, Integer bimestre) {
+        return provaRepository.findByTurmaDisciplinaIdAndBimestre(turmaDisciplinaId, bimestre);
     }
 }
