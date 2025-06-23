@@ -1,6 +1,7 @@
 package edu.unialfa.java.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
@@ -32,8 +33,10 @@ public class Prova {
     private Integer bimestre;
 
     @OneToMany(mappedBy = "prova", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
     @Builder.Default
     private List<Questao> questoes = new ArrayList<>();
+
 
     // Método auxiliar para adicionar questão e manter relação bidirecional
     public void adicionarQuestao(Questao questao) {

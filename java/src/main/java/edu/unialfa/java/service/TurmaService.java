@@ -1,23 +1,27 @@
 package edu.unialfa.java.service;
 
+import edu.unialfa.java.api.dto.AlunoDTO;
+import edu.unialfa.java.api.dto.TurmaDTO;
+import edu.unialfa.java.model.Aluno;
 import edu.unialfa.java.model.Turma;
-import edu.unialfa.java.repository.TurmaAlunoRepository;
-import edu.unialfa.java.repository.TurmaDisciplinaRepository;
-import edu.unialfa.java.repository.TurmaRepository;
+import edu.unialfa.java.model.TurmaAluno;
+import edu.unialfa.java.model.Usuario;
+import edu.unialfa.java.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class TurmaService {
 
     @Autowired
-
     private final TurmaRepository turmaRepository;
 
     @Autowired

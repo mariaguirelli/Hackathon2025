@@ -1,145 +1,107 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/turma.dart';
 import '../models/aluno.dart';
 import '../models/prova.dart';
 import '../models/questao.dart';
+import '../models/RespostaAlunoDTO.dart';
 
 class ApiService {
-  // ===============================================
-  // 🔥 MOCKS - Usados enquanto o backend não está pronto
-  // ===============================================
+  final String baseUrl = 'http://localhost:8080/api';  // Ajuste conforme seu backend
 
-  // 👉 Buscar turmas
-  Future<List<Turma>> fetchTurmas() async {
-    await Future.delayed(const Duration(seconds: 2));
-    return [
-      Turma(id: 1, nome: '5º A - Matemática'),
-      Turma(id: 2, nome: '5º B - Física'),
-      Turma(id: 3, nome: '5º C - Química'),
-    ];
+  Future<Map<String, String>> _getHeaders() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('userToken');
+    if (token == null) {
+      throw Exception('Usuário não autenticado');
+    }
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
   }
 
-  // 👉 Buscar alunos da turma
-  Future<List<Aluno>> fetchAlunos(int turmaId) async {
-    await Future.delayed(const Duration(seconds: 2));
-    return [
-      Aluno(id: 1, nome: 'Carlos Eduardo'),
-      Aluno(id: 2, nome: 'Maria Silva'),
-      Aluno(id: 3, nome: 'João Pedro'),
-    ];
-  }
+  // Buscar turmas do professor pelo e-mail
+  Future<List<Turma>> fetchTurmas(String email) async {
+    final headers = await _getHeaders();
+    final url = Uri.parse('$baseUrl/turmas/por-professor?email=$email');
 
-  // 👉 Buscar provas do aluno
-  Future<List<Prova>> fetchProvas(int alunoId) async {
-    await Future.delayed(const Duration(seconds: 2));
-    return [
-      Prova(id: 1, nome: 'Prova de Matemática', data: '2025-06-30'),
-      Prova(id: 2, nome: 'Prova de Física', data: '2025-07-10'),
-      Prova(id: 3, nome: 'Prova de Química', data: '2025-07-20'),
-    ];
-  }
-
-  // 👉 Buscar questões da prova
-  Future<List<Questao>> fetchQuestoes(int provaId) async {
-    await Future.delayed(const Duration(seconds: 2));
-    return [
-      Questao(
-        id: 1,
-        texto: 'Qual é a capital do Brasil?',
-        opcoes: ['Brasília', 'Rio de Janeiro', 'São Paulo', 'Salvador'],
-      ),
-      Questao(
-        id: 2,
-        texto: 'Quanto é 2 + 2?',
-        opcoes: ['3', '4', '5', '6'],
-      ),
-      Questao(
-        id: 3,
-        texto: 'Qual a cor do céu?',
-        opcoes: ['Azul', 'Verde', 'Vermelho', 'Preto'],
-      ),
-    ];
-  }
-
-  // 👉 Enviar respostas da prova
-  Future<bool> enviarRespostas(int provaId, Map<int, String> respostas) async {
-    await Future.delayed(const Duration(seconds: 2));
-    print('✅ Enviando respostas da prova $provaId: $respostas');
-    return true;
-  }
-
-  // ===============================================
-  // 🔗 API REAL - Use quando o backend estiver pronto
-  // ===============================================
-
-  /*
-  // 👉 Buscar turmas do professor
-  Future<List<Turma>> fetchTurmas() async {
-    final response = await http.get(
-      Uri.parse('http://SEU_BACKEND/api/professor/1/turmas'),
-    );
+    final response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
       final List data = jsonDecode(response.body);
       return data.map((json) => Turma.fromJson(json)).toList();
     } else {
-      throw Exception('Erro ao buscar turmas');
+      throw Exception('Erro ao buscar turmas: ${response.statusCode}');
     }
   }
 
-  // 👉 Buscar alunos da turma
-  Future<List<Aluno>> fetchAlunos(int turmaId) async {
-    final response = await http.get(
-      Uri.parse('http://SEU_BACKEND/api/turmas/$turmaId/alunos'),
-    );
+  // Buscar alunos da turma pelo id da turma
+  Future<List<Aluno>> fetchAlunosDaTurma(int turmaId) async {
+    final headers = await _getHeaders();
+    final url = Uri.parse('$baseUrl/aluno/$turmaId/alunos');
+
+    final response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
       final List data = jsonDecode(response.body);
       return data.map((json) => Aluno.fromJson(json)).toList();
     } else {
-      throw Exception('Erro ao buscar alunos');
+      throw Exception('Erro ao buscar alunos da turma: ${response.statusCode}');
     }
   }
 
-  // 👉 Buscar provas do aluno
-  Future<List<Prova>> fetchProvas(int alunoId) async {
-    final response = await http.get(
-      Uri.parse('http://SEU_BACKEND/api/alunos/$alunoId/provas'),
-    );
+  Future<List<Prova>> fetchProvasDaTurma(int alunoId, {int? bimestre}) async {
+    final headers = await _getHeaders();
+
+    // Monta a URL base com alunoId
+    String urlString = '$baseUrl/provas/aluno/$alunoId';
+
+    // Se bimestre foi passado, adiciona na query string
+    if (bimestre != null) {
+      urlString += '?bimestre=$bimestre';
+    }
+
+    final url = Uri.parse(urlString);
+
+    final response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
       final List data = jsonDecode(response.body);
       return data.map((json) => Prova.fromJson(json)).toList();
     } else {
-      throw Exception('Erro ao buscar provas');
+      throw Exception('Erro ao buscar provas da turma: ${response.statusCode}');
     }
   }
 
-  // 👉 Buscar questões da prova
-  Future<List<Questao>> fetchQuestoes(int provaId) async {
-    final response = await http.get(
-      Uri.parse('http://SEU_BACKEND/api/provas/$provaId/questoes'),
-    );
+  Future<List<Questao>> fetchQuestoesDaProva(int provaId) async {
+    final headers = await _getHeaders();
+    final url = Uri.parse('$baseUrl/questoes/prova/$provaId');
+
+    final response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
       final List data = jsonDecode(response.body);
       return data.map((json) => Questao.fromJson(json)).toList();
     } else {
-      throw Exception('Erro ao buscar questões');
+      throw Exception('Erro ao buscar questões da prova: ${response.statusCode}');
     }
   }
 
-  // 👉 Enviar respostas da prova
-  Future<bool> enviarRespostas(int provaId, Map<int, String> respostas) async {
+  Future<bool> enviarRespostas(List<RespostaAlunoDTO> respostas) async {
+    final headers = await _getHeaders();
+    final url = Uri.parse('$baseUrl/respostas/enviar');
+
+    final body = jsonEncode(respostas.map((r) => r.toJson()).toList());
+
     final response = await http.post(
-      Uri.parse('http://SEU_BACKEND/api/provas/$provaId/respostas'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'respostas': respostas}),
+      url,
+      headers: headers,
+      body: body,
     );
 
     return response.statusCode == 200;
   }
-  */
 }

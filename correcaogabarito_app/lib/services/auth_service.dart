@@ -1,52 +1,41 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart'; // Para widgets, ScaffoldMessenger, Navigator, etc
+import '../services/auth_service.dart'; // Seu serviço de autenticação (ajuste o caminho conforme seu projeto)
+
 
 class AuthService {
-  // Mock para testar login
-  Future<bool> login(String username, String password) async {
-    await Future.delayed(const Duration(seconds: 2));
-    if (username == 'professor' && password == '1234') {
-      // Simula sucesso
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('userToken', 'token_mock_123');
-      await prefs.setString('username', username);
-      return true;
-    }
-    return false;
-  }
-
-  // Login real depois que o backend estiver pronto
-  /*
-  Future<bool> login(String username, String password) async {
+  Future<String?> login(String email, String senha) async {
     final response = await http.post(
-      Uri.parse('http://SEU_BACKEND/api/login'),
+      Uri.parse('http://localhost:8080/api/login'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'username': username, 'senha': password}),
+      body: jsonEncode({'email': email, 'senha': senha}),
     );
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('userToken', data['token']);
-      await prefs.setString('username', username);
-      return true;
+      await prefs.setString('email', email);
+      return null; // Login OK
     } else {
-      return false;
+      // Lê o corpo JSON retornado pela API (ex: {"code": "NOT_PROFESSOR", "message": "Você não tem permissão."})
+      final data = jsonDecode(response.body);
+      return data['message'] ?? 'Erro desconhecido';
     }
   }
-  */
 
-  // Verificar se usuário está logado
-  Future<bool> isLoggedIn() async {
+   Future<bool> isLoggedIn() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.containsKey('userToken');
   }
 
-  // Logout (apagar dados)
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('userToken');
-    await prefs.remove('username');
+    await prefs.remove('email');
   }
+
 }
+

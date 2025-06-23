@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-import 'turmas_screen.dart';
+import '../services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -11,8 +9,9 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
   final TextEditingController senhaController = TextEditingController();
+  final AuthService _authService = AuthService();
 
   bool _isLoading = false;
 
@@ -23,42 +22,31 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _verificarLogin() async {
-    final prefs = await SharedPreferences.getInstance();
-    final username = prefs.getString('username');
-
-    if (username != null) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const TurmasScreen()),
-      );
+    final loggedIn = await _authService.isLoggedIn();
+    print('Logado? $loggedIn');
+    if (loggedIn) {
+      Navigator.pushReplacementNamed(context, '/turmas');
     }
   }
 
-  Future<void> _salvarLogin(String username) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('username', username);
-  }
-
   Future<void> _login() async {
-    final username = usernameController.text.trim();
+    final email = emailController.text.trim();
     final senha = senhaController.text.trim();
 
     setState(() {
       _isLoading = true;
     });
 
-    await Future.delayed(const Duration(seconds: 2)); // Simula delay API
+    final erro = await _authService.login(email, senha);
 
-    if (username == 'professor' && senha == '1234') {
-      await _salvarLogin(username);
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const TurmasScreen()),
-      );
+    if (erro == null) {
+      // Login bem-sucedido
+      Navigator.pushReplacementNamed(context, '/turmas');
     } else {
+      // Mostrar mensagem de erro retornada pela API
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Usuário ou senha incorretos'),
+        SnackBar(
+          content: Text(erro),
           backgroundColor: Colors.red,
         ),
       );
@@ -71,7 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
-    usernameController.dispose();
+    emailController.dispose();
     senhaController.dispose();
     super.dispose();
   }
@@ -94,8 +82,9 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             const SizedBox(height: 32),
             TextField(
-              controller: usernameController,
-              decoration: const InputDecoration(labelText: 'Usuário'),
+              controller: emailController,
+              decoration: const InputDecoration(labelText: 'Email'),
+              keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: 16),
             TextField(
@@ -110,7 +99,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   ? const SizedBox(
                       width: 24,
                       height: 24,
-                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
                     )
                   : const Text('Entrar'),
             ),
