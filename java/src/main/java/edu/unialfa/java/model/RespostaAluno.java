@@ -2,6 +2,7 @@ package edu.unialfa.java.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "respostas_aluno")
@@ -9,6 +10,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString(exclude = {"aluno", "questao"})
+@EqualsAndHashCode(exclude = {"aluno", "questao"})
 public class RespostaAluno {
 
     @Id
@@ -23,8 +26,12 @@ public class RespostaAluno {
     @JoinColumn(name = "questao_id", nullable = false)
     private Questao questao;
 
-    @Column(length = 1)
-    private String respostaMarcada; // A, B, C, D ou E
+    @Column(name = "resposta_marcada", length = 1, nullable = false)
+    private String respostaMarcada;  // Exemplo: "A", "B", "C", etc.
 
+    @Column(name = "acertou")
     private Boolean acertou;
+
+    @Column(name = "data_resposta", nullable = false)
+    private LocalDateTime dataResposta;
 }

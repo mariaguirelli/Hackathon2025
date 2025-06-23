@@ -1,13 +1,19 @@
 package edu.unialfa.java.security.config;
 
+import edu.unialfa.java.security.filter.JwtAuthenticationFilter;
+import edu.unialfa.java.service.JwtService;
 import edu.unialfa.java.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import edu.unialfa.java.security.config.VerificaAlteracaoSenhaFilter;
 
@@ -27,13 +33,29 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   AuthenticationSuccessHandler successHandler,
-                                                   VerificaAlteracaoSenhaFilter senhaFilter,
-                                                   CustomAccessDeniedHandler accessDeniedHandler) throws Exception {
+    public SecurityFilterChain apiFilterChain(HttpSecurity http,
+                                              JwtAuthenticationFilter jwtFilter) throws Exception {
         return http
+                .securityMatcher("/api/**")  // só para rotas API
                 .csrf(csrf -> csrf.disable())
-                .addFilterBefore(senhaFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/login").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .build();
+    }
+
+    @Bean
+    public SecurityFilterChain webFilterChain(HttpSecurity http,
+                                              AuthenticationSuccessHandler successHandler,
+                                              VerificaAlteracaoSenhaFilter senhaFilter,
+                                              CustomAccessDeniedHandler accessDeniedHandler) throws Exception {
+        return http
+                .securityMatcher("/**") // todas as outras rotas (web)
+                .csrf(csrf -> csrf.disable())
+                .addFilterBefore(senhaFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login", "/css/**", "/js/**", "/alterar-senha", "/alterar-senha/**").permitAll()
                         .requestMatchers("/admin/**").hasAuthority("ADMIN")
@@ -41,9 +63,7 @@ public class SecurityConfig {
                         .requestMatchers("/aluno/**").hasAuthority("ALUNO")
                         .anyRequest().authenticated()
                 )
-                .exceptionHandling(exception -> exception
-                        .accessDeniedHandler(accessDeniedHandler)
-                )
+                .exceptionHandling(exception -> exception.accessDeniedHandler(accessDeniedHandler))
                 .formLogin(form -> form
                         .loginPage("/login")
                         .successHandler(successHandler)
@@ -63,4 +83,16 @@ public class SecurityConfig {
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter(JwtService jwtService, UsuarioDetailsService usuarioDetailsService) {
+        return new JwtAuthenticationFilter(jwtService, usuarioDetailsService);
+    }
+
+
 }

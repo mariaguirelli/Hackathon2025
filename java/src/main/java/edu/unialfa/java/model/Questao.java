@@ -1,5 +1,6 @@
 package edu.unialfa.java.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,6 +18,7 @@ public class Questao {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "prova_id", nullable = false)
+    @JsonBackReference
     private Prova prova;
 
     @Column(columnDefinition = "TEXT")

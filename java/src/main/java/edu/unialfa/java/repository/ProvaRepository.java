@@ -28,4 +28,6 @@ public interface ProvaRepository extends JpaRepository<Prova, Long> {
 
     List<Prova> findByTurmaDisciplinaIdAndBimestre(Long turmaDisciplinaId, Integer bimestre);
 
+    List<Prova> findByTurmaDisciplinaIdInAndBimestre(List<Long> turmaDisciplinaIds, int bimestre);
+
 }
