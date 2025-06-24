@@ -12,18 +12,18 @@
 
     <main class="flex-grow-1 p-4 bg-white shadow-sm rounded m-3">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="mb-0" th:text="${turmaAluno.id != null} ? 'Editar Vinculação' : 'Nova Vinculação'"></h2>
+            <h2 class="mb-0" th:text="${turmaAlunoDTO != null and turmaAlunoDTO.turmaId != null} ? 'Editar Vinculação' : 'Nova Vinculação'"></h2>
             <a href="/admin/turma-alunos" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Voltar
             </a>
         </div>
 
-        <form th:action="@{/admin/turma-alunos/salvar}" th:object="${turmaAluno}" method="post">
-            <input type="hidden" th:if="${turmaAluno.id != null}" th:field="*{id}"/>
+        <form th:action="@{/admin/turma-alunos/vincular-multiplos}" th:object="${turmaAlunoDTO}" method="post">
+            <input type="hidden" th:if="${turmaAlunoDTO.id != null}" th:field="*{id}"/>
 
             <div class="mb-3">
                 <label class="form-label fw-semibold">Turma</label>
-                <select class="form-select" th:field="*{turma.id}" required>
+                <select class="form-select" th:field="*{turmaId}" required>
                     <option value="" disabled selected>Selecione a turma</option>
                     <option th:each="turma : ${turmas}"
                             th:value="${turma.id}"
@@ -32,9 +32,8 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label fw-semibold">Aluno</label>
-                <select class="form-select" th:field="*{aluno.id}" required>
-                    <option value="" disabled selected>Selecione o aluno</option>
+                <label class="form-label fw-semibold">Alunos</label>
+                <select class="form-select" th:field="*{alunosIds}" multiple required size="10">
                     <option th:each="aluno : ${alunos}"
                             th:value="${aluno.id}"
                             th:text="${aluno.nome + ' ' + aluno.sobrenome}"></option>

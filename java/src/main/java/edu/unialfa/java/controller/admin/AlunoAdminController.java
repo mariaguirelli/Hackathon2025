@@ -49,7 +49,6 @@ public class AlunoAdminController {
         return "redirect:/admin/alunos";
     }
 
-
     @GetMapping("/editar/{id}")
     public String editar(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
         Aluno aluno = alunoService.buscarPorId(id);
@@ -81,6 +80,4 @@ public class AlunoAdminController {
         }
         return "redirect:/admin/alunos";
     }
-
-
 }

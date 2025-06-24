@@ -24,4 +24,6 @@ public interface TurmaDisciplinaRepository extends JpaRepository<TurmaDisciplina
     @Query("SELECT DISTINCT td.turma.id FROM TurmaDisciplina td WHERE td.professor.id = :professorId")
     List<Long> findTurmaIdsByProfessorId(@Param("professorId") Long professorId);
 
+    List<TurmaDisciplina> findByTurmaIdInAndProfessorId(List<Long> turmaIds, Long professorId);
+
 }

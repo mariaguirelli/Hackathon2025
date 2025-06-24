@@ -4,12 +4,11 @@ import edu.unialfa.java.api.dto.ProvaDTO;
 import edu.unialfa.java.model.Prova;
 import edu.unialfa.java.model.TurmaAluno;
 import edu.unialfa.java.model.TurmaDisciplina;
-import edu.unialfa.java.repository.ProvaAlunoRepository;
-import edu.unialfa.java.repository.ProvaRepository;
-import edu.unialfa.java.repository.TurmaAlunoRepository;
-import edu.unialfa.java.repository.TurmaDisciplinaRepository;
+import edu.unialfa.java.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.context.SecurityContextHolder;
+import edu.unialfa.java.model.Usuario;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,9 +28,26 @@ public class ProvaApiService {
     private TurmaAlunoRepository turmaAlunoRepository;
 
     @Autowired
-    private ProvaAlunoRepository provaAlunoRepository;  // <<< ADICIONA ISSO
+    private ProvaAlunoRepository provaAlunoRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
 
     public List<ProvaDTO> buscarProvasDoAlunoPorBimestre(Long alunoId, int bimestre) {
+        // Obter email do usuário logado
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        // Buscar usuário logado
+        Usuario usuarioLogado = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalStateException("Usuário não encontrado"));
+
+        if (usuarioLogado.getProfessor() == null) {
+            throw new IllegalStateException("Usuário logado não está associado a um professor");
+        }
+
+        Long professorId = usuarioLogado.getProfessor().getId();
+
         // 1. Buscar turmas do aluno
         List<TurmaAluno> turmasDoAluno = turmaAlunoRepository.findByAlunoId(alunoId);
         List<Long> turmaIds = turmasDoAluno.stream()
@@ -42,8 +58,8 @@ public class ProvaApiService {
             return Collections.emptyList();
         }
 
-        // 2. Buscar TurmaDisciplina pelas turmas
-        List<TurmaDisciplina> turmaDisciplinas = turmaDisciplinaRepository.findByTurmaIdIn(turmaIds);
+        // 2. Buscar TurmaDisciplina pelas turmas e pelo professor logado
+        List<TurmaDisciplina> turmaDisciplinas = turmaDisciplinaRepository.findByTurmaIdInAndProfessorId(turmaIds, professorId);
         List<Long> turmaDisciplinaIds = turmaDisciplinas.stream()
                 .map(TurmaDisciplina::getId)
                 .collect(Collectors.toList());
@@ -52,7 +68,7 @@ public class ProvaApiService {
             return Collections.emptyList();
         }
 
-        // 3. Buscar todas as provas daquele bimestre nas turmas do aluno
+        // 3. Buscar todas as provas daquele bimestre nas turmas do aluno e professor
         List<Prova> provas = provaRepository.findByTurmaDisciplinaIdInAndBimestre(turmaDisciplinaIds, bimestre);
 
         if (provas.isEmpty()) {
@@ -70,5 +86,6 @@ public class ProvaApiService {
 
         return provasNaoFeitas;
     }
+
 }
 

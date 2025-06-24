@@ -23,27 +23,37 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _verificarLogin() async {
     final loggedIn = await _authService.isLoggedIn();
-    print('Logado? $loggedIn');
     if (loggedIn) {
-      Navigator.pushReplacementNamed(context, '/turmas');
+      Navigator.pushReplacementNamed(context, '/home');
     }
   }
 
-  Future<void> _login() async {
-    final email = emailController.text.trim();
-    final senha = senhaController.text.trim();
+Future<void> _login() async {
+  final email = emailController.text.trim();
+  final senha = senhaController.text.trim();
 
-    setState(() {
-      _isLoading = true;
-    });
+  setState(() {
+    _isLoading = true;
+  });
 
-    final erro = await _authService.login(email, senha);
+  final erro = await _authService.login(email, senha);
 
-    if (erro == null) {
-      // Login bem-sucedido
-      Navigator.pushReplacementNamed(context, '/turmas');
+  if (erro == null) {
+    Navigator.pushReplacementNamed(context, '/home');
+  } else {
+    // Verifica se o erro é "precisa alterar senha"
+    if (erro.toLowerCase().contains('precisa alterar a senha')) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Você precisa alterar sua senha antes de acessar.'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+
+      // Redireciona para a tela de alteração de senha, passando o email por exemplo
+      Navigator.pushNamed(context, '/alterar-senha', arguments: {'email': email});
     } else {
-      // Mostrar mensagem de erro retornada pela API
+      // Mostra erro genérico
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(erro),
@@ -51,11 +61,13 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       );
     }
-
-    setState(() {
-      _isLoading = false;
-    });
   }
+
+  setState(() {
+    _isLoading = false;
+  });
+}
+
 
   @override
   void dispose() {

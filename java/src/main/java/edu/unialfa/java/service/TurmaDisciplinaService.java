@@ -2,7 +2,10 @@ package edu.unialfa.java.service;
 
 import edu.unialfa.java.model.TurmaDisciplina;
 import edu.unialfa.java.repository.TurmaDisciplinaRepository;
+import edu.unialfa.java.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,7 +15,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TurmaDisciplinaService {
 
-    private final TurmaDisciplinaRepository repository;
+    @Autowired
+    TurmaDisciplinaRepository repository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     public List<TurmaDisciplina> listarTodos() {
         return repository.findAll();
@@ -31,12 +38,19 @@ public class TurmaDisciplinaService {
     }
 
     public List<TurmaDisciplina> listarPorProfessorLogado() {
-        // Aqui você deve obter o professor logado do contexto de segurança
-        // Exemplo fictício:
-        Long professorId = obterProfessorLogadoId();
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        var usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalStateException("Usuário não encontrado"));
+
+        if (usuario.getProfessor() == null) {
+            throw new IllegalStateException("Usuário não está vinculado a um professor.");
+        }
+
+        Long professorId = usuario.getProfessor().getId();
 
         return repository.findByProfessorId(professorId);
     }
+
 
     private Long obterProfessorLogadoId() {
         // Implementar pegar o ID do professor logado pelo SecurityContext

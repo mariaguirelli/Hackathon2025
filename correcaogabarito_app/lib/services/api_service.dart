@@ -23,12 +23,17 @@ class ApiService {
     };
   }
 
-  // Buscar turmas do professor pelo e-mail
-  Future<List<Turma>> fetchTurmas(String email) async {
-    final headers = await _getHeaders();
-    final url = Uri.parse('$baseUrl/turmas/por-professor?email=$email');
+  Future<List<Turma>> fetchTurmas(String email, int anoLetivo) async {
+    final headers = await _getHeaders();  // Certifique-se que retorna {'Authorization': 'Bearer <token>'} etc
+    final url = Uri.parse('$baseUrl/turmas/por-professor?email=$email&anoLetivo=$anoLetivo');
+
+    print('GET $url');
+    print('Headers: $headers');
 
     final response = await http.get(url, headers: headers);
+
+    print('Status: ${response.statusCode}');
+    print('Body: ${response.body}');
 
     if (response.statusCode == 200) {
       final List data = jsonDecode(response.body);

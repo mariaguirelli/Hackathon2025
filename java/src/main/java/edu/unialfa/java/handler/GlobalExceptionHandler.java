@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import edu.unialfa.java.exception.PrecisaAlterarSenhaException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -15,6 +16,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .body(new ErrorResponse("NOT_PROFESSOR", ex.getMessage()));
+    }
+
+    @ExceptionHandler(PrecisaAlterarSenhaException.class)
+    public ResponseEntity<ErrorResponse> handlePrecisaAlterarSenha(PrecisaAlterarSenhaException ex) {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(new ErrorResponse("NEEDS_PASSWORD_CHANGE", ex.getMessage()));
     }
 
     @ExceptionHandler(BadCredentialsException.class)

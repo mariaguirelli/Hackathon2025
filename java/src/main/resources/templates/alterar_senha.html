@@ -1,23 +1,22 @@
-<!-- resources/templates/alterar_senha.html -->
 <!DOCTYPE html>
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{shared/layout :: head}"></head>
-<body>
+<body style="background-color: #f8f9fa; min-height: 100vh;">
 
 <div class="container d-flex justify-content-center align-items-center vh-100">
-    <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px;">
-        <h2 class="text-center mb-4">Redefinir Senha</h2>
-        <form th:action="@{/alterar-senha}" method="post" onsubmit="return validarSenha()">
-            <div class="mb-3">
-                <label for="senhaNova" class="form-label">Nova Senha</label>
-                <input type="password" class="form-control" id="senhaNova" name="novaSenha" placeholder="Digite a nova senha" required minlength="6">
+    <div class="card shadow-sm p-5 rounded-4" style="width: 100%; max-width: 420px; background-color: #fff;">
+        <h2 class="text-center mb-5 fw-bold text-dark">Redefinir Senha</h2>
+        <form th:action="@{/alterar-senha}" method="post" onsubmit="return validarSenha()" novalidate>
+            <div class="mb-4">
+                <label for="senhaNova" class="form-label fw-semibold text-secondary">Nova Senha</label>
+                <input type="password" class="form-control form-control-lg" id="senhaNova" name="novaSenha" placeholder="Digite a nova senha" required minlength="6" autocomplete="new-password">
             </div>
-            <div class="mb-3">
-                <label for="confirmarSenha" class="form-label">Confirmar Nova Senha</label>
-                <input type="password" class="form-control" id="confirmarSenha" name="confirmarSenha" placeholder="Confirme a nova senha" required minlength="6">
+            <div class="mb-5">
+                <label for="confirmarSenha" class="form-label fw-semibold text-secondary">Confirmar Nova Senha</label>
+                <input type="password" class="form-control form-control-lg" id="confirmarSenha" name="confirmarSenha" placeholder="Confirme a nova senha" required minlength="6" autocomplete="new-password">
             </div>
             <div class="d-grid">
-                <button class="btn btn-primary" type="submit">Salvar Nova Senha</button>
+                <button class="btn btn-success btn-lg fw-semibold" type="submit" style="letter-spacing: 0.05em;">Salvar Nova Senha</button>
             </div>
         </form>
     </div>

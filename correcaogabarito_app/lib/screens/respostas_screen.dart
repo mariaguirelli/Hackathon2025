@@ -7,17 +7,20 @@ import '../models/turma.dart';
 import '../services/api_service.dart';
 import '../widgets/breadcrumb.dart';
 import '../models/RespostaAlunoDTO.dart';
+import '../models/turmas_params.dart';
 
 class RespostasScreen extends StatefulWidget {
   final Prova prova;
   final Aluno aluno;
   final Turma turma;
+  final TurmasParams params;
 
   const RespostasScreen({
     super.key,
     required this.prova,
     required this.aluno,
     required this.turma,
+    required this.params,
   });
 
   @override
@@ -52,7 +55,8 @@ class _RespostasScreenState extends State<RespostasScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Gabarito enviado com sucesso!')),
       );
-      Navigator.pop(context);
+      // Retorna true para indicar que houve atualização
+      Navigator.pop(context, true);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Erro ao enviar gabarito')),
@@ -69,18 +73,6 @@ class _RespostasScreenState extends State<RespostasScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Breadcrumb(
-              items: [
-                BreadcrumbItem(label: 'Home', onTap: () => Navigator.popUntil(context, (route) => route.isFirst)),
-                BreadcrumbItem(label: 'Turmas', onTap: () => Navigator.popUntil(context, (route) => route.settings.name == '/turmas' || route.isFirst)),
-                BreadcrumbItem(label: 'Alunos', onTap: () => Navigator.pop(context)),
-                BreadcrumbItem(label: 'Provas', onTap: () => Navigator.pop(context)),
-                BreadcrumbItem(label: widget.prova.titulo),
-              ],
-            ),
-          ),
           Expanded(
             child: FutureBuilder<List<Questao>>(
               future: _futureQuestoes,
@@ -107,7 +99,6 @@ class _RespostasScreenState extends State<RespostasScreen> {
                         final index = entry.key;
                         final questao = entry.value;
 
-                        // Apenas as letras A a E como opções
                         final List<String> letras = ['A', 'B', 'C', 'D', 'E'];
 
                         return Card(
@@ -142,9 +133,7 @@ class _RespostasScreenState extends State<RespostasScreen> {
                           ),
                         );
                       }).toList(),
-
                       const SizedBox(height: 8),
-
                       ElevatedButton.icon(
                         onPressed: respostasSelecionadas.length == _questoes.length
                             ? _enviarRespostas

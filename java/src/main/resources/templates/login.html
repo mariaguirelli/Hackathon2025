@@ -1,23 +1,22 @@
-<!-- resources/templates/login.html -->
 <!DOCTYPE html>
 <html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="shared/layout :: head"></head>
-<body>
+<body style="background-color: #f8f9fa; min-height: 100vh;">
 
 <div class="container d-flex justify-content-center align-items-center vh-100">
-    <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px;">
-        <h2 class="text-center mb-4">Login</h2>
-        <form th:action="@{/login}" method="post">
-            <div class="mb-3">
-                <label for="email" class="form-label">E-mail</label>
-                <input type="email" class="form-control" id="email" name="username" placeholder="Digite seu e-mail" required>
+    <div class="card shadow-sm p-5 rounded-4" style="width: 100%; max-width: 400px; background-color: #fff;">
+        <h2 class="text-center mb-5 fw-bold text-dark">Entrar no Sistema</h2>
+        <form th:action="@{/login}" method="post" novalidate>
+            <div class="mb-4">
+                <label for="email" class="form-label fw-semibold text-secondary">E-mail</label>
+                <input type="email" class="form-control form-control-lg" id="email" name="username" placeholder="Digite seu e-mail" required autofocus>
             </div>
-            <div class="mb-3">
-                <label for="senha" class="form-label">Senha</label>
-                <input type="password" class="form-control" id="senha" name="password" placeholder="Digite sua senha" required>
+            <div class="mb-5">
+                <label for="senha" class="form-label fw-semibold text-secondary">Senha</label>
+                <input type="password" class="form-control form-control-lg" id="senha" name="password" placeholder="Digite sua senha" required>
             </div>
             <div class="d-grid">
-                <button class="btn btn-primary" type="submit">Entrar</button>
+                <button class="btn btn-primary btn-lg fw-semibold" type="submit" style="letter-spacing: 0.05em;">Entrar</button>
             </div>
         </form>
     </div>
@@ -27,7 +26,8 @@
     Swal.fire({
         icon: 'error',
         title: 'Erro ao fazer login',
-        text: 'Usuário ou senha inválidos!'
+        text: 'Usuário ou senha inválidos!',
+        confirmButtonColor: '#d33',
     });
 </script>
 

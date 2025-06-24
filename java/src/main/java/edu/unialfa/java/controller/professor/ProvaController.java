@@ -122,15 +122,17 @@ public class ProvaController {
     @GetMapping("/excluir/{id}")
     public String excluir(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
-            provaService.excluir(id);
+            provaService.excluir(id);  // tenta excluir a prova
             redirectAttributes.addFlashAttribute("mensagem", "Prova excluída com sucesso!");
             redirectAttributes.addFlashAttribute("tipoMensagem", "sucesso");
         } catch (Exception e) {
+            // Captura exceção, geralmente IllegalStateException ou EntityNotFoundException
             redirectAttributes.addFlashAttribute("mensagem", "Erro ao excluir prova: " + e.getMessage());
             redirectAttributes.addFlashAttribute("tipoMensagem", "erro");
         }
-        return "redirect:/professor/provas";
+        return "redirect:/professor/provas";  // redireciona para a lista de provas
     }
+
 
     @GetMapping("/provas-por-filtro")
     public List<ProvaDTO> getProvasPorFiltro(

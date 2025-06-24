@@ -42,4 +42,29 @@ public class TurmaApiService {
                 .map(t -> new TurmaDTO(t.getId(), t.getNome(), t.getAnoLetivo()))
                 .collect(Collectors.toList());
     }
+
+    public List<TurmaDTO> buscarTurmasDoProfessorPorEmailEano(String email, Integer anoLetivo) {
+        Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
+
+        if (usuarioOpt.isEmpty() || usuarioOpt.get().getProfessor() == null) {
+            throw new RuntimeException("Professor não encontrado com esse e-mail.");
+        }
+
+        Long professorId = usuarioOpt.get().getProfessor().getId();
+
+        List<Long> turmaIds = turmaDisciplinaRepository.findTurmaIdsByProfessorId(professorId);
+
+        List<Turma> turmas = turmaRepository.findAllById(turmaIds);
+
+        if (anoLetivo != null) {
+            turmas = turmas.stream()
+                    .filter(t -> t.getAnoLetivo() != null && t.getAnoLetivo().equals(anoLetivo))
+                    .collect(Collectors.toList());
+        }
+
+        return turmas.stream()
+                .map(t -> new TurmaDTO(t.getId(), t.getNome(), t.getAnoLetivo()))
+                .collect(Collectors.toList());
+    }
+
 }

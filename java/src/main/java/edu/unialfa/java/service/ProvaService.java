@@ -6,6 +6,7 @@ import edu.unialfa.java.model.*;
 import edu.unialfa.java.repository.NotaRepository;
 import edu.unialfa.java.repository.ProvaRepository;
 import edu.unialfa.java.repository.UsuarioRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -55,8 +56,6 @@ public class ProvaService {
 
         prova.setQuestoes(questoesValidas);
 
-
-
         TurmaDisciplina td = prova.getTurmaDisciplina();
         Integer bimestre = prova.getBimestre();
 
@@ -67,23 +66,34 @@ public class ProvaService {
 
         LocalDate hoje = LocalDate.now();
 
-        // 1. Data da prova deve ser futura (não pode ser hoje nem no passado)
+        // Data da prova deve ser futura (não pode ser hoje nem no passado)
         if (!dataAplicacao.isAfter(hoje)) {
             throw new IllegalArgumentException("Data da prova deve ser uma data futura.");
         }
 
-        int ano = dataAplicacao.getYear();
-        LocalDate inicioAno = LocalDate.of(ano, 1, 1);
-        LocalDate fimAno = LocalDate.of(ano, 12, 31);
+        Turma turma = td.getTurma();
+        Disciplina disciplina = td.getDisciplina();
 
-        // 2. Verifica se já existe prova no mesmo ano, turma, disciplina e bimestre
-        Optional<Prova> provaExistente = provaRepository.findByTurmaDisciplinaAndBimestreAndDataAplicacaoBetween(td, bimestre, inicioAno, fimAno);
-
-        if (provaExistente.isPresent() && (prova.getId() == null || !provaExistente.get().getId().equals(prova.getId()))) {
-            throw new IllegalStateException("Já existe uma prova para esta turma, disciplina e bimestre neste ano.");
+        if (turma == null || disciplina == null) {
+            throw new IllegalStateException("Turma ou disciplina estão nulos.");
         }
 
-        // 3. Verifica se já existe uma prova com a mesma data exata para essa turma, disciplina e bimestre
+        Integer anoLetivo = turma.getAnoLetivo();
+        if (anoLetivo == null) {
+            throw new IllegalStateException("Ano letivo da turma não está definido.");
+        }
+
+        TurmaDisciplina turmad = prova.getTurmaDisciplina();
+
+        Optional<Prova> provaExistente = provaRepository.findByTurmaDisciplinaAndBimestreAndAnoLetivo(
+                turmad, bimestre, anoLetivo
+        );
+
+        if (provaExistente.isPresent() && (prova.getId() == null || !provaExistente.get().getId().equals(prova.getId()))) {
+            throw new IllegalStateException("Já existe uma prova para esta turma, disciplina, bimestre e ano letivo.");
+        }
+
+        // Verifica se já existe uma prova na mesma data, turma, disciplina e bimestre
         Optional<Prova> provaMesmoDia = provaRepository.findByTurmaDisciplinaAndBimestreAndDataAplicacao(td, bimestre, dataAplicacao);
         if (provaMesmoDia.isPresent() && (prova.getId() == null || !provaMesmoDia.get().getId().equals(prova.getId()))) {
             throw new IllegalStateException("Já existe uma prova marcada para essa turma, disciplina e bimestre na mesma data.");
@@ -93,25 +103,22 @@ public class ProvaService {
             throw new IllegalArgumentException("A prova deve conter pelo menos uma questão.");
         }
 
-        if (prova.getQuestoes() != null && !prova.getQuestoes().isEmpty()) {
-            double somaNotas = prova.getQuestoes().stream()
-                    .mapToDouble(Questao::getValor)
-                    .sum();
+        double somaNotas = prova.getQuestoes().stream()
+                .mapToDouble(Questao::getValor)
+                .sum();
 
-            if (Math.abs(somaNotas - 6.0) > 0.0001) {
-                throw new IllegalArgumentException("A soma das notas das questões deve ser exatamente 6.0. Atualmente está em: " + somaNotas);
-            }
+        if (Math.abs(somaNotas - 6.0) > 0.0001) {
+            throw new IllegalArgumentException("A soma das notas das questões deve ser exatamente 6.0. Atualmente está em: " + somaNotas);
         }
 
-
-        if (prova.getQuestoes() != null) {
-            for (Questao questao : prova.getQuestoes()) {
-                questao.setProva(prova); // garante associação bidirecional para persistência correta
-            }
+        // Ajusta a associação bidirecional para as questões
+        for (Questao questao : prova.getQuestoes()) {
+            questao.setProva(prova);
         }
 
         return provaRepository.save(prova);
     }
+
 
     public List<ProvaDTO> buscarProvasPorTurmaDisciplinaEBimestre(Long turmaDisciplinaId, Integer bimestre) {
         List<Prova> provas = provaRepository.findByTurmaDisciplinaIdAndBimestre(turmaDisciplinaId, bimestre);
@@ -158,8 +165,18 @@ public class ProvaService {
 
 
     public void excluir(Long id) {
+        if (!provaRepository.existsById(id)) {
+            throw new EntityNotFoundException("Prova não encontrada com o ID: " + id);
+        }
+
+        boolean provaPossuiNotas = notaRepository.existsByProvaId(id);
+        if (provaPossuiNotas) {
+            throw new IllegalStateException("Não é possível excluir a prova. Existem notas vinculadas a ela.");
+        }
+
         provaRepository.deleteById(id);
     }
+
 
     public List<Prova> buscarPorTurmaDisciplinaEBimestre(Long turmaDisciplinaId, Integer bimestre) {
         return provaRepository.findByTurmaDisciplinaIdAndBimestre(turmaDisciplinaId, bimestre);
