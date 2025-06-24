@@ -4,6 +4,12 @@
 
 O projeto foi idealizado com foco em **eficiência, usabilidade, escalabilidade** e adoção de **boas práticas de desenvolvimento web**, utilizando Java com Spring Boot no backend e Flutter no frontend mobile.
 
+O projeto permite por parte do administrador criar, listar, editar e excluir os professores, alunos, turmas, disciplinas e usuários. Permite também fazer o vinculo entre o mesmos criando uma turma completa.
+
+Por parte do profesor é possível criar provas, separando as mesmas por disciplina e por bimestre, podendo escolher quantas questões ele quer, qual o enunciado, quais as alternativas e qual a correta, além de abribuir nota individual a cada questão. E ele pode tambem ver a estatistica daquela turma naquela prova em específico no geral. O professor também tem acesso ao App em flutter que ele utiliza para enviar as respostas dos alunos para a API realizar a correção.
+
+E por parte do aluno, ele tem acesso ao sistema web para consultar as suas notas, filtrando por turma e disciplina.
+
 ---
 
 ## 🛠️ Tecnologias Utilizadas
