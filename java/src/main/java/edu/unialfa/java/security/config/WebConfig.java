@@ -10,10 +10,9 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
-                .allowedOrigins("http://localhost:53911") // seu Flutter Web rodando aqui
+                .allowedOrigins("http://localhost:53911") // Permite Flutter Web local
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowedHeaders("*") // permite todos os headers
-                .allowCredentials(true); // ou false se não usar cookies
+                .allowedHeaders("Authorization", "Content-Type", "Accept", "Origin", "X-Requested-With")
+                .allowCredentials(true);
     }
 }
-

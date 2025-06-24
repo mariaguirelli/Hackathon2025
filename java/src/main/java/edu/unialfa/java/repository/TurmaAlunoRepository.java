@@ -24,4 +24,5 @@ public interface TurmaAlunoRepository extends JpaRepository<TurmaAluno, Long> {
     @Query("SELECT ta.turma FROM TurmaAluno ta WHERE ta.aluno.id = :alunoId")
     List<Turma> findTurmasByAlunoId(Long alunoId);
 
+    boolean existsByTurmaIdAndAlunoId(Long turmaId, Long alunoId);
 }

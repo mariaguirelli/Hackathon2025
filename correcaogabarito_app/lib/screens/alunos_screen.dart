@@ -6,11 +6,13 @@ import '../models/aluno.dart';
 import '../services/api_service.dart';
 import 'provas_screen.dart';
 import '../widgets/breadcrumb.dart';
+import '../models/turmas_params.dart';
 
 class AlunosScreen extends StatefulWidget {
   final Turma turma;
+  final TurmasParams params;
 
-  const AlunosScreen({super.key, required this.turma});
+  const AlunosScreen({super.key, required this.turma, required this.params});
 
   @override
   State<AlunosScreen> createState() => _AlunosScreenState();
@@ -37,23 +39,6 @@ class _AlunosScreenState extends State<AlunosScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Breadcrumb(
-              items: [
-                BreadcrumbItem(
-                  label: 'Home',
-                  onTap: () {
-                    Navigator.popUntil(context, (route) => route.isFirst);
-                  },
-                ),
-                BreadcrumbItem(
-                  label: 'Turmas',
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                BreadcrumbItem(label: 'Alunos'),
-              ],
-            ),
             const SizedBox(height: 8),
             Expanded(
               child: FutureBuilder<List<Aluno>>(
@@ -83,6 +68,7 @@ class _AlunosScreenState extends State<AlunosScreen> {
                                   builder: (context) => ProvasScreen(
                                     aluno: aluno,
                                     turma: widget.turma,
+                                    params: widget.params,
                                   ),
                                 ),
                               );

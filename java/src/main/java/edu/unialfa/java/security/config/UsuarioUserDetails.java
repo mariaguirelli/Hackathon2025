@@ -21,6 +21,16 @@ public class UsuarioUserDetails implements UserDetails {
         return List.of(new SimpleGrantedAuthority(usuario.getPerfil().name()));
     }
 
+    public boolean isPrecisaAlterarSenha() {
+        return usuario.getPrecisaAlterarSenha() != null && usuario.getPrecisaAlterarSenha();
+    }
+
+    public Usuario getUsuario() {
+        return this.usuario;
+    }
+
+    public String getNome(){ return usuario.getNome(); }
+
     @Override
     public String getPassword() {
         return usuario.getSenha();

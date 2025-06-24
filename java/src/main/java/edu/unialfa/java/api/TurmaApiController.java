@@ -18,8 +18,12 @@ public class TurmaApiController {
     private TurmaApiService turmaApiService;
 
     @GetMapping("/por-professor")
-    public ResponseEntity<List<TurmaDTO>> listarTurmasDoProfessor(@RequestParam String email) {
-        List<TurmaDTO> turmas = turmaApiService.buscarTurmasDoProfessorPorEmail(email);
+    public ResponseEntity<List<TurmaDTO>> listarTurmasDoProfessor(
+            @RequestParam String email,
+            @RequestParam(required = false) Integer anoLetivo) { // parâmetro opcional
+
+        List<TurmaDTO> turmas = turmaApiService.buscarTurmasDoProfessorPorEmailEano(email, anoLetivo);
         return ResponseEntity.ok(turmas);
     }
+
 }
